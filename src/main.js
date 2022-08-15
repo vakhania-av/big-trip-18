@@ -11,11 +11,9 @@ const tripControlsFiltersElement = document.querySelector('.trip-controls__filte
 const tripEventsElement = document.querySelector('.trip-events');
 render(new InfoMainView(), tripEventsElement);
 
-boardPresenter.init(tripMainElement);
-
 const tripInfoElement = tripMainElement.querySelector('.trip-info');
-debugger
 
+boardPresenter.init(tripMainElement);
 
 
 export { tripInfoElement };
