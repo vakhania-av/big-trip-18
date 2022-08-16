@@ -28,7 +28,7 @@ export default class FilterView {
 
   getElement () {
     if (!this.element) {
-      createElement(this.getTemplate());
+      this.element = createElement(this.getTemplate());
     }
 
     return this.element;
