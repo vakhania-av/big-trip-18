@@ -7,8 +7,12 @@ import InfoCostView from '../view/info-cost-view.js';
 import FilterView from '../view/filter-view.js';
 
 export default class BoardPresenter {
-  init = (container) => {
+  init = (container, pointModel) => {
     this.container = container;
+    this.pointModel = pointModel;
+    this.boardPoints = [...pointModel.points];
+
+    console.log(this.boardPoints);
 
     render(new InfoMainView(), tripInfoElement);
     render(new InfoCostView(), tripInfoElement);

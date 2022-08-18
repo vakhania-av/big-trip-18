@@ -7,11 +7,15 @@ import InfoView from './view/info-view.js';
 import EventEditView from './view/event-edit-view.js';
 import EventItemView from './view/event-item-view.js';
 
+import PointModel from './model/point-model.js';
+
 // Константа для отрисовки компонента "Точка маршрута"
 const TRIP_EVENTS_COUNT = 3;
 
 const boardPresenter = new BoardPresenter();
 const eventPresenter = new EventPresenter();
+
+const pointModel = new PointModel();
 
 const tripMainElement = document.querySelector('.trip-main');
 const tripControlsFiltersElement = document.querySelector('.trip-controls__filters');
@@ -21,7 +25,7 @@ render(new InfoView(), tripEventsElement);
 
 const tripInfoElement = document.querySelector('.trip-info');
 
-boardPresenter.init(tripMainElement);
+boardPresenter.init(tripMainElement, pointModel);
 eventPresenter.init(tripEventsElement);
 
 const tripEventsListElement = tripEventsElement.querySelector('.trip-events__list');
