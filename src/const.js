@@ -15,23 +15,23 @@ const OFFERS = [
   },
   {
     id: 2,
-    title: 'Upgrade to a business class',
-    price: 120
+    title: 'Choose seats',
+    price: 20
   },
   {
     id: 3,
-    title: 'Upgrade to a business class',
-    price: 120
+    title: 'Add meal',
+    price: 17
   },
   {
     id: 4,
-    title: 'Upgrade to a business class',
-    price: 120
+    title: 'Personal guide',
+    price: 70
   },
   {
     id: 5,
-    title: 'Upgrade to a business class',
-    price: 120
+    title: 'Travel by train',
+    price: 35
   }
 ];
 
@@ -50,5 +50,8 @@ const DESCRIPTIONS = [
   'In rutrum ac purus sit amet tempus'
 ];
 
-export { CITIES, TYPES, OFFERS, DESCRIPTIONS };
+// Количество фотографий
+const PHOTOS_COUNT = 10;
+
+export { CITIES, TYPES, OFFERS, DESCRIPTIONS, PHOTOS_COUNT };
 
