@@ -36,4 +36,5 @@ for (let i = 0; i < TRIP_EVENTS_COUNT; i++) {
   render(new EventItemView(), tripEventsListElement);
 }
 
+
 export { tripInfoElement, tripControlsFiltersElement };

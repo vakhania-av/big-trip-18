@@ -1,7 +1,5 @@
 /** Модуль со служебными функциями **/
 
-import dayjs from 'dayjs';
-
 // Функция получения случайного числа из диапазона (включительно)
 const getRandomInt = (min, max) => {
   min = Math.ceil(min);

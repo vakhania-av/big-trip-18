@@ -1,5 +1,7 @@
 /** Описание структуры данных "Точка маршрута" **/
 
+import dayjs from 'dayjs';
+
 import { getRandomInt, getRandomArrayElement } from '../utils.js';
 import { CITIES, TYPES, OFFERS, DESCRIPTIONS, PHOTOS_COUNT } from '../const.js';
 
@@ -17,9 +19,9 @@ const generatePhoto = () => ({
 
 // Функция генерации структуры пункта назначения
 const generateDestination = () => ({
-  description: Array.from({ length: 5 }, getRandomArrayElement(DESCRIPTIONS)),
+  description: Array.from({ length: 5 }, () => getRandomArrayElement(DESCRIPTIONS)),
   city: getRandomArrayElement(CITIES),
-  photos: Array.from({ length: 5 }, generatePhoto())
+  photos: Array.from({ length: 5 }, generatePhoto)
 });
 
 // Функция генерации массива опций
@@ -29,14 +31,22 @@ const generateOffers = () => Array.from({ length: 5 }, () => getRandomArrayEleme
 const getPointId = () => String(getRandomInt(1, 50));
 
 // Функция формирования структуры точки маршрута
-export const generatePoint = () => ({
-  price: getRandomInt(10, 800),
-  dateFrom: '2019-07-10T22:55:56.845Z',
-  dateTo: '2019-07-11T11:22:13.375Z',
-  destination: generateDestination(),
-  id: getPointId(),
-  isFavorite: Boolean(getRandomInt(0, 1)),
-  offers: generateOffers(),
-  type: getRandomArrayElement(TYPES)
-});
+export const generatePoint = () => {
+  const MAX_DATE_GAP = 30;
+  const dayGap = getRandomInt(-MAX_DATE_GAP, MAX_DATE_GAP);
+
+  const dateFrom = dayjs().add(dayGap, 'day').toDate();
+  const dateTo = dayjs(dateFrom).add(getRandomInt(60, 300), 'minute').toDate();
+
+  return {
+    price: getRandomInt(10, 800),
+    dateFrom,
+    dateTo,
+    destination: generateDestination(),
+    id: getPointId(),
+    isFavorite: Boolean(getRandomInt(0, 1)),
+    offers: generateOffers(),
+    type: getRandomArrayElement(TYPES),
+  };
+};
 
