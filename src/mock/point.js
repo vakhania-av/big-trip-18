@@ -2,30 +2,8 @@
 
 import dayjs from 'dayjs';
 
-import { getRandomInt, getRandomArrayElement } from '../utils.js';
-import { CITIES, TYPES, OFFERS, DESCRIPTIONS, PHOTOS_COUNT } from '../const.js';
-
-// Функция генерации массива источников фотографий
-const generatePhotoSourcesArray = (count) => Array.from({length: count}, () => `http://picsum.photos/248/152?r=${getRandomInt(1, count)}`);
-
-// Массив фотографий
-const PHOTOS = generatePhotoSourcesArray(PHOTOS_COUNT);
-
-// Функция генерации фотографий
-const generatePhoto = () => ({
-  src: getRandomArrayElement(PHOTOS),
-  description: getRandomArrayElement(DESCRIPTIONS)
-});
-
-// Функция генерации структуры "Пункт назначения"
-const generateDestination = () => ({
-  description: Array.from({ length: 5 }, () => getRandomArrayElement(DESCRIPTIONS)),
-  city: getRandomArrayElement(CITIES),
-  photos: Array.from({ length: 5 }, generatePhoto)
-});
-
-// Функция генерации массива "Дополнительные опции"
-const generateOffers = () => Array.from({ length: 5 }, () => getRandomArrayElement(OFFERS));
+import { getRandomInt, getRandomArrayElement, getUniqueNumbersArray } from '../utils.js';
+import { TYPES } from '../const.js';
 
 // Функция получения идентификатора для точки маршрута
 const getPointId = () => String(getRandomInt(1, 50));
@@ -42,10 +20,10 @@ export const generatePoint = () => {
     price: getRandomInt(10, 800),
     dateFrom,
     dateTo,
-    destination: generateDestination(),
+    destination: 1,
     id: getPointId(),
     isFavorite: Boolean(getRandomInt(0, 1)),
-    offers: generateOffers(),
+    offers: getUniqueNumbersArray(3, getRandomInt),
     type: getRandomArrayElement(TYPES),
   };
 };

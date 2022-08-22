@@ -11,6 +11,7 @@ const infoPresenter = new InfoPresenter();
 const boardPresenter = new BoardPresenter();
 
 const pointModel = new PointModel();
+console.log(pointModel.points);
 
 const tripMainElement = document.querySelector('.trip-main');
 const tripControlsFiltersElement = document.querySelector('.trip-controls__filters');

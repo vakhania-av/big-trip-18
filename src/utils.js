@@ -12,5 +12,30 @@ const getRandomInt = (min, max) => {
 // Функция получения случайного элемента массива
 const getRandomArrayElement = (arr) => arr[getRandomInt(0, arr.length - 1)];
 
-export { getRandomInt, getRandomArrayElement };
+// Функция получения массива уникальных чисел из диапазона
+const getUniqueNumbersArray = (count, cb, min = 1, max = 5) => {
+  const items = [];
+
+  for (let i = 0; i < count; i++) {
+    items.push(cb(min, max));
+  }
+
+  return [...new Set(items)];
+};
+
+// Функция сопоставления выбранных дополнительных опций
+const getCheckedOffers = (point, offers) => {
+  const offersByType = offers.find((offer) => (point.type === offer.type || point.type));
+
+  return offersByType.offers.filter((offer) => point.offers.some((id) => id === offer.id));
+};
+
+// Функция сопоставления выбранного пункта назначения
+const getCheckedDestination = (point, destinations) => {
+  return destinations.find((destination) => { 
+
+    return point.destination === destination.id})
+};
+
+export { getRandomInt, getRandomArrayElement, getUniqueNumbersArray, getCheckedOffers, getCheckedDestination };
 
