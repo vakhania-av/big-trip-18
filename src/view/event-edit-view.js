@@ -159,6 +159,11 @@ const createEventEditTemplate = () => (
 );
 
 export default class EventEditView {
+
+  constructor (point) {
+    this.point = point;
+  }
+
   getTemplate () {
     return createEventEditTemplate();
   }

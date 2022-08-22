@@ -17,14 +17,14 @@ const generatePhoto = () => ({
   description: getRandomArrayElement(DESCRIPTIONS)
 });
 
-// Функция генерации структуры пункта назначения
+// Функция генерации структуры "Пункт назначения"
 const generateDestination = () => ({
   description: Array.from({ length: 5 }, () => getRandomArrayElement(DESCRIPTIONS)),
   city: getRandomArrayElement(CITIES),
   photos: Array.from({ length: 5 }, generatePhoto)
 });
 
-// Функция генерации массива опций
+// Функция генерации массива "Дополнительные опции"
 const generateOffers = () => Array.from({ length: 5 }, () => getRandomArrayElement(OFFERS));
 
 // Функция получения идентификатора для точки маршрута

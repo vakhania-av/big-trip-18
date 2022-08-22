@@ -20,8 +20,8 @@ const OFFERS = [
   },
   {
     id: 3,
-    title: 'Add meal',
-    price: 17
+    title: 'Choose the radio station',
+    price: 60
   },
   {
     id: 4,
