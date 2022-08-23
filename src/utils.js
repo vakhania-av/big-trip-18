@@ -23,6 +23,9 @@ const getUniqueNumbersArray = (count, cb, min = 1, max = 5) => {
   return [...new Set(items)];
 };
 
+// Проверка на выбранные дополнительные опции
+const isCheckedOffer = (point, offer) => point.offers.some((currentOffer) => currentOffer.id === offer.id);
+
 // Функция сопоставления выбранных дополнительных опций
 const getCheckedOffers = (point, offers) => {
   const offersByType = offers.find((offer) => (point.type === offer.type || point.type));
@@ -31,11 +34,7 @@ const getCheckedOffers = (point, offers) => {
 };
 
 // Функция сопоставления выбранного пункта назначения
-const getCheckedDestination = (point, destinations) => {
-  return destinations.find((destination) => { 
+const getCheckedDestination = (point, destinations) => destinations.find((destination) => point.destination === destination.id);
 
-    return point.destination === destination.id})
-};
-
-export { getRandomInt, getRandomArrayElement, getUniqueNumbersArray, getCheckedOffers, getCheckedDestination };
+export { getRandomInt, getRandomArrayElement, getUniqueNumbersArray, isCheckedOffer, getCheckedOffers, getCheckedDestination };
 

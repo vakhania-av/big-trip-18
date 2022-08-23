@@ -17,7 +17,6 @@ export default class PointModel {
   get points () {
     for (const point of this._points) {
       point.offers = getCheckedOffers(point, this._offers);
-      console.log(this._destination);
       point.destination = getCheckedDestination(point, this._destination);
     }
 

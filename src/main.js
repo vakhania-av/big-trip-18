@@ -11,7 +11,6 @@ const infoPresenter = new InfoPresenter();
 const boardPresenter = new BoardPresenter();
 
 const pointModel = new PointModel();
-console.log(pointModel.points);
 
 const tripMainElement = document.querySelector('.trip-main');
 const tripControlsFiltersElement = document.querySelector('.trip-controls__filters');
@@ -19,7 +18,6 @@ const tripEventsElement = document.querySelector('.trip-events');
 
 infoPresenter.init(tripMainElement);
 render(new FilterView(), tripControlsFiltersElement);
-boardPresenter.init(tripEventsElement);
+boardPresenter.init(tripEventsElement, pointModel);
 
-export { pointModel };
 

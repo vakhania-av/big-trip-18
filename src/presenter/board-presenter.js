@@ -11,16 +11,19 @@ export default class BoardPresenter {
 
   listComponent = new EventListView();
 
-  init = (container) => {
+  init = (container, pointModel) => {
     this.container = container;
+    this.pointModel = pointModel;
+    this.points = [...this.pointModel.points];
+    this.offers = [...this.pointModel.offers];
 
     render(new SortView(), container);
     render(this.listComponent, container);
-    render (new EventEditView(), this.listComponent.getElement());
+    render (new EventEditView(this.points[0], this.offers), this.listComponent.getElement());
 
 
     for (let i = 0; i < TRIP_EVENTS_COUNT; i++) {
-      render(new EventItemView(), this.listComponent.getElement());
+      render(new EventItemView(this.points[i]), this.listComponent.getElement());
     }
   };
 }
