@@ -1,5 +1,6 @@
 import { createElement } from '../render';
-import { isCheckedOffer } from '../utils.js';
+
+import { isCheckedOffer, humanizeDate } from '../utils.js';
 
 const createOffersTemplate = (point, offers) => {
   const offersByType = offers.find((offer) => point.type === offer.type || point.type);
@@ -18,7 +19,11 @@ const createOffersTemplate = (point, offers) => {
 };
 
 const createEventEditTemplate = (point, offers) => {
-  const { dateFrom, dateTo, destination, price, type } = point;
+  const { dateFrom, dateTo, destination, basePrice, type } = point;
+
+  const dateFromFormatted = humanizeDate(dateFrom);
+  const dateToFormatted = humanizeDate(dateTo);
+  const typeFormatted = `${type[0].toUpperCase()}${type.slice(1)}`;
 
   return `<li class="trip-events__item">
     <form class="event event--edit" action="#" method="post">
@@ -84,7 +89,7 @@ const createEventEditTemplate = (point, offers) => {
 
         <div class="event__field-group  event__field-group--destination">
           <label class="event__label  event__type-output" for="event-destination-1">
-            Flight
+            ${typeFormatted}
           </label>
           <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destination.name}" list="destination-list-1">
           <datalist id="destination-list-1">
@@ -96,10 +101,10 @@ const createEventEditTemplate = (point, offers) => {
 
         <div class="event__field-group  event__field-group--time">
           <label class="visually-hidden" for="event-start-time-1">From</label>
-          <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${dateFrom}">
+          <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${dateFromFormatted}">
           &mdash;
           <label class="visually-hidden" for="event-end-time-1">To</label>
-          <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${dateTo}">
+          <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${dateToFormatted}">
         </div>
 
         <div class="event__field-group  event__field-group--price">
@@ -107,7 +112,7 @@ const createEventEditTemplate = (point, offers) => {
             <span class="visually-hidden">Price</span>
             &euro;
           </label>
-          <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${price}">
+          <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${basePrice}">
         </div>
 
         <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>

@@ -1,4 +1,8 @@
 /** Модуль со служебными функциями **/
+import dayjs from 'dayjs';
+import duration from 'dayjs/plugin/duration';
+
+dayjs.extend(duration);
 
 // Функция получения случайного числа из диапазона (включительно)
 const getRandomInt = (min, max) => {
@@ -23,6 +27,27 @@ const getUniqueNumbersArray = (count, cb, min = 1, max = 5) => {
   return [...new Set(items)];
 };
 
+// Функции приведения даты и времени к человекочитаемому виду
+const humanizeDate = (date) => dayjs(date).format('DD/MM/YY HH:mm');
+const humanizePointDate = (date) => dayjs(date).format('MMM D');
+const humanizePointTime = (date) => dayjs(date).format('HH:mm');
+
+// Функция подсчёта времени пребывания в точке
+const calculateDurationInPoint = (startDate, endDate) => {
+  const dateFrom = dayjs(startDate);
+  const dateTo = dayjs(endDate);
+  const differenceInMinutes = dateTo.diff(dateFrom, 'minute');
+
+  switch (true) {
+    case (dateTo.diff(dateFrom, 'days') >= 1):
+      return dayjs.duration(differenceInMinutes, 'minute').format('DD[D] HH[H] mm[M]');
+    case (dateTo.diff(dateFrom, 'hours') >= 1):
+      return dayjs.duration(differenceInMinutes, 'minute').format('HH[H] mm[M]');
+    default:
+      return dayjs.duration(differenceInMinutes, 'minute').format('mm[M]');
+  }
+};
+
 // Проверка на выбранные дополнительные опции
 const isCheckedOffer = (point, offer) => point.offers.some((currentOffer) => currentOffer.id === offer.id);
 
@@ -36,5 +61,16 @@ const getCheckedOffers = (point, offers) => {
 // Функция сопоставления выбранного пункта назначения
 const getCheckedDestination = (point, destinations) => destinations.find((destination) => point.destination === destination.id);
 
-export { getRandomInt, getRandomArrayElement, getUniqueNumbersArray, isCheckedOffer, getCheckedOffers, getCheckedDestination };
+export {
+  getRandomInt,
+  getRandomArrayElement,
+  getUniqueNumbersArray,
+  humanizeDate,
+  humanizePointDate,
+  humanizePointTime,
+  calculateDurationInPoint,
+  isCheckedOffer,
+  getCheckedOffers,
+  getCheckedDestination
+};
 

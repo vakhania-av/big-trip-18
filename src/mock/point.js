@@ -8,16 +8,24 @@ import { TYPES } from '../const.js';
 // Функция получения идентификатора для точки маршрута
 const getPointId = () => String(getRandomInt(1, 50));
 
+const generateDate = () => {
+  const MAX_DATE_GAP = 5000;
+  const daysGap = getRandomInt(-MAX_DATE_GAP, MAX_DATE_GAP);
+
+  return dayjs().add(daysGap, 'm').toDate();
+};
+
 // Функция формирования структуры точки маршрута
 export const generatePoint = () => {
-  const MAX_DATE_GAP = 30;
-  const dayGap = getRandomInt(-MAX_DATE_GAP, MAX_DATE_GAP);
+  const dateFrom = generateDate();
+  let dateTo = generateDate();
 
-  const dateFrom = dayjs().add(dayGap, 'day').toDate();
-  const dateTo = dayjs(dateFrom).add(getRandomInt(60, 300), 'minute').toDate();
+  while (dateFrom >= dateTo) {
+    dateTo = generateDate();
+  }
 
   return {
-    price: getRandomInt(10, 800),
+    basePrice: getRandomInt(10, 800),
     dateFrom,
     dateTo,
     destination: 1,
