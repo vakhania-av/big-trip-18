@@ -1,17 +1,29 @@
 import { render } from '../render.js';
 
-import { tripInfoElement, tripControlsFiltersElement } from '../main.js';
+import EventEditView from '../view/event-edit-view.js';
+import EventItemView from '../view/event-item-view.js';
+import EventListView from '../view/event-list-view.js';
+import SortView from '../view/trip-sort-view.js';
 
-import InfoMainView from '../view/info-main-view.js';
-import InfoCostView from '../view/info-cost-view.js';
-import FilterView from '../view/filter-view.js';
+const TRIP_EVENTS_COUNT = 3; // Константа для отрисовки компонента "Точка маршрута"
 
 export default class BoardPresenter {
-  init = (container) => {
-    this.container = container;
 
-    render(new InfoMainView(), tripInfoElement);
-    render(new InfoCostView(), tripInfoElement);
-    render(new FilterView(), tripControlsFiltersElement);
+  listComponent = new EventListView();
+
+  init = (container, pointModel) => {
+    this.container = container;
+    this.pointModel = pointModel;
+    this.points = [...this.pointModel.points];
+    this.offers = [...this.pointModel.offers];
+
+    render(new SortView(), container);
+    render(this.listComponent, container);
+    render (new EventEditView(this.points[0], this.offers), this.listComponent.getElement());
+
+
+    for (let i = 0; i < TRIP_EVENTS_COUNT; i++) {
+      render(new EventItemView(this.points[i]), this.listComponent.getElement());
+    }
   };
 }
