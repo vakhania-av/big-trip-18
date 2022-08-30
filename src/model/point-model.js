@@ -6,20 +6,20 @@ import { generateDestination } from '../mock/destination.js';
 import { getCheckedOffers, getCheckedDestination } from '../utils.js';
 
 export default class PointModel {
-  _points = Array.from({length: 10}, generatePoint);
-  _offers = generateOffers();
-  _destination = generateDestination();
+  #points = Array.from({length: 10}, generatePoint);
+  #offers = generateOffers();
+  #destination = generateDestination();
 
   get offers () {
-    return this._offers;
+    return this.#offers;
   }
 
   get points () {
-    for (const point of this._points) {
-      point.offers = getCheckedOffers(point, this._offers);
-      point.destination = getCheckedDestination(point, this._destination);
+    for (const point of this.#points) {
+      point.offers = getCheckedOffers(point, this.#offers);
+      point.destination = getCheckedDestination(point, this.#destination);
     }
 
-    return this._points;
+    return this.#points;
   }
 }

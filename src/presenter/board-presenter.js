@@ -9,21 +9,27 @@ const TRIP_EVENTS_COUNT = 3; // Константа для отрисовки к�
 
 export default class BoardPresenter {
 
-  listComponent = new EventListView();
+  #container = null;
+  #pointModel = null;
+
+  #listComponent = new EventListView();
+
+  #points = [];
+  #offers = [];
 
   init = (container, pointModel) => {
-    this.container = container;
-    this.pointModel = pointModel;
-    this.points = [...this.pointModel.points];
-    this.offers = [...this.pointModel.offers];
+    this.#container = container;
+    this.#pointModel = pointModel;
+    this.#points = [...this.#pointModel.points];
+    this.#offers = [...this.#pointModel.offers];
 
-    render(new SortView(), container);
-    render(this.listComponent, container);
-    render (new EventEditView(this.points[0], this.offers), this.listComponent.getElement());
+    render(new SortView(), this.#container);
+    render(this.#listComponent, this.#container);
+    render (new EventEditView(this.#points[0], this.#offers), this.#listComponent.element);
 
 
     for (let i = 0; i < TRIP_EVENTS_COUNT; i++) {
-      render(new EventItemView(this.points[i]), this.listComponent.getElement());
+      render(new EventItemView(this.#points[i]), this.#listComponent.element);
     }
   };
 }
