@@ -5,8 +5,6 @@ import EventItemView from '../view/event-item-view.js';
 import EventListView from '../view/event-list-view.js';
 import SortView from '../view/trip-sort-view.js';
 
-const TRIP_EVENTS_COUNT = 3; // Константа для отрисовки компонента "Точка маршрута"
-
 export default class BoardPresenter {
 
   #container = null;
@@ -25,11 +23,35 @@ export default class BoardPresenter {
 
     render(new SortView(), this.#container);
     render(this.#listComponent, this.#container);
-    render (new EventEditView(this.#points[0], this.#offers), this.#listComponent.element);
+    //render (new EventEditView(this.#points[0], this.#offers), this.#listComponent.element);
 
-
-    for (let i = 0; i < TRIP_EVENTS_COUNT; i++) {
-      render(new EventItemView(this.#points[i]), this.#listComponent.element);
+    for (let i = 0; i < this.#points.length; i++) {
+      this.#renderPoint(this.#points[i], this.#offers);
     }
+  };
+
+  // Отрисовка компонента точек маршрута
+  #renderPoint = (point, offers) => {
+    const pointComponent = new EventItemView(point);
+    const editFormComponent = new EventEditView(point, offers);
+
+    const replacePointToForm = () => {
+      this.#listComponent.element.replaceChild(editFormComponent.element, pointComponent.element);
+    };
+
+    const replaceFormToPoint = () => {
+      this.#listComponent.element.replaceChild(pointComponent.element, editFormComponent.element);
+    };
+
+    pointComponent.element.querySelector('.event__rollup-btn').addEventListener('click', () => {
+      replacePointToForm();
+    });
+
+    editFormComponent.element.querySelector('.event--edit').addEventListener('submit', (evt) => {
+      evt.preventDefault();
+      replaceFormToPoint();
+    });
+
+    render(pointComponent, this.#listComponent.element);
   };
 }
