@@ -30,7 +30,7 @@ export default class BoardPresenter {
     }
   };
 
-  // Отрисовка компонента точек маршрута
+  // Отрисовка компонентов точек маршрута и формы редактирования
   #renderPoint = (point, offers) => {
     const pointComponent = new EventItemView(point);
     const editFormComponent = new EventEditView(point, offers);
@@ -43,13 +43,28 @@ export default class BoardPresenter {
       this.#listComponent.element.replaceChild(pointComponent.element, editFormComponent.element);
     };
 
+    const onEscKeyDown = (evt) => {
+      if (evt.key.includes('Esc', 'Escape')) {
+        evt.preventDefault();
+        replaceFormToPoint();
+        document.removeEventListener('keydown', onEscKeyDown);
+      }
+    };
+
     pointComponent.element.querySelector('.event__rollup-btn').addEventListener('click', () => {
       replacePointToForm();
+      document.addEventListener('keydown', onEscKeyDown);
     });
 
     editFormComponent.element.querySelector('.event--edit').addEventListener('submit', (evt) => {
       evt.preventDefault();
       replaceFormToPoint();
+      document.removeEventListener('keydown', onEscKeyDown);
+    });
+
+    editFormComponent.element.querySelector('.event__rollup-btn').addEventListener('click', () => {
+      replaceFormToPoint();
+      document.removeEventListener('keydown', onEscKeyDown);
     });
 
     render(pointComponent, this.#listComponent.element);
