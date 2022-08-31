@@ -5,25 +5,68 @@ import EventItemView from '../view/event-item-view.js';
 import EventListView from '../view/event-list-view.js';
 import SortView from '../view/trip-sort-view.js';
 
-const TRIP_EVENTS_COUNT = 3; // Константа для отрисовки компонента "Точка маршрута"
-
 export default class BoardPresenter {
 
-  listComponent = new EventListView();
+  #container = null;
+  #pointModel = null;
+
+  #listComponent = new EventListView();
+
+  #points = [];
+  #offers = [];
 
   init = (container, pointModel) => {
-    this.container = container;
-    this.pointModel = pointModel;
-    this.points = [...this.pointModel.points];
-    this.offers = [...this.pointModel.offers];
+    this.#container = container;
+    this.#pointModel = pointModel;
+    this.#points = [...this.#pointModel.points];
+    this.#offers = [...this.#pointModel.offers];
 
-    render(new SortView(), container);
-    render(this.listComponent, container);
-    render (new EventEditView(this.points[0], this.offers), this.listComponent.getElement());
+    render(new SortView(), this.#container);
+    render(this.#listComponent, this.#container);
+    //render (new EventEditView(this.#points[0], this.#offers), this.#listComponent.element);
 
-
-    for (let i = 0; i < TRIP_EVENTS_COUNT; i++) {
-      render(new EventItemView(this.points[i]), this.listComponent.getElement());
+    for (let i = 0; i < this.#points.length; i++) {
+      this.#renderPoint(this.#points[i], this.#offers);
     }
+  };
+
+  // Отрисовка компонентов точек маршрута и формы редактирования
+  #renderPoint = (point, offers) => {
+    const pointComponent = new EventItemView(point);
+    const editFormComponent = new EventEditView(point, offers);
+
+    const replacePointToForm = () => {
+      this.#listComponent.element.replaceChild(editFormComponent.element, pointComponent.element);
+    };
+
+    const replaceFormToPoint = () => {
+      this.#listComponent.element.replaceChild(pointComponent.element, editFormComponent.element);
+    };
+
+    const onEscKeyDown = (evt) => {
+      if (evt.key.includes('Esc', 'Escape')) {
+        evt.preventDefault();
+        replaceFormToPoint();
+        document.removeEventListener('keydown', onEscKeyDown);
+      }
+    };
+
+    pointComponent.element.querySelector('.event__rollup-btn').addEventListener('click', () => {
+      replacePointToForm();
+      document.addEventListener('keydown', onEscKeyDown);
+    });
+
+    editFormComponent.element.querySelector('.event--edit').addEventListener('submit', (evt) => {
+      evt.preventDefault();
+      replaceFormToPoint();
+      document.removeEventListener('keydown', onEscKeyDown);
+    });
+
+    editFormComponent.element.querySelector('.event__rollup-btn').addEventListener('click', () => {
+      replaceFormToPoint();
+      document.removeEventListener('keydown', onEscKeyDown);
+    });
+
+    render(pointComponent, this.#listComponent.element);
   };
 }
