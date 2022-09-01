@@ -6,7 +6,7 @@ import { generateDestination } from '../mock/destination.js';
 import { getCheckedOffers, getCheckedDestination } from '../utils.js';
 
 export default class PointModel {
-  #points = Array.from({length: 10}, generatePoint);
+  #points = Array.from({length: 0}, generatePoint);
   #offers = generateOffers();
   #destination = generateDestination();
 

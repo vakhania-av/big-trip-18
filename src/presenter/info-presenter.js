@@ -6,8 +6,11 @@ const { AFTERBEGIN } = RenderPosition;
 export default class InfoPresenter {
   #container = null;
 
-  init = (container) => {
+  constructor (container) {
     this.#container = container;
+  }
+
+  init = () => {
     render(new InfoView(), this.#container, AFTERBEGIN);
   };
 }

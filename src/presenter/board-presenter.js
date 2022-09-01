@@ -4,6 +4,7 @@ import EventEditView from '../view/event-edit-view.js';
 import EventItemView from '../view/event-item-view.js';
 import EventListView from '../view/event-list-view.js';
 import SortView from '../view/trip-sort-view.js';
+import NoEventView from '../view/no-event-view.js';
 
 export default class BoardPresenter {
 
@@ -15,15 +16,27 @@ export default class BoardPresenter {
   #points = [];
   #offers = [];
 
-  init = (container, pointModel) => {
+  constructor (container, pointModel) {
     this.#container = container;
     this.#pointModel = pointModel;
+  }
+
+  init = () => {
     this.#points = [...this.#pointModel.points];
     this.#offers = [...this.#pointModel.offers];
 
+    this.#renderBoard();
+  };
+
+  // Отрисовка доски (контейнера)
+  #renderBoard = () => {
     render(new SortView(), this.#container);
     render(this.#listComponent, this.#container);
-    //render (new EventEditView(this.#points[0], this.#offers), this.#listComponent.element);
+
+    if (!this.#points.length) {
+      render(new NoEventView(), this.#listComponent.element);
+      return;
+    }
 
     for (let i = 0; i < this.#points.length; i++) {
       this.#renderPoint(this.#points[i], this.#offers);
