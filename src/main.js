@@ -7,17 +7,17 @@ import FilterView from './view/trip-filters-view.js';
 
 import PointModel from './model/point-model.js';
 
-const infoPresenter = new InfoPresenter();
-const boardPresenter = new BoardPresenter();
-
 const pointModel = new PointModel();
 
 const tripMainElement = document.querySelector('.trip-main');
 const tripControlsFiltersElement = document.querySelector('.trip-controls__filters');
 const tripEventsElement = document.querySelector('.trip-events');
 
-infoPresenter.init(tripMainElement);
+const infoPresenter = new InfoPresenter(tripMainElement);
+const boardPresenter = new BoardPresenter(tripEventsElement, pointModel);
+
+infoPresenter.init();
 render(new FilterView(), tripControlsFiltersElement);
-boardPresenter.init(tripEventsElement, pointModel);
+boardPresenter.init();
 
 
