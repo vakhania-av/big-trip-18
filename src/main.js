@@ -1,4 +1,4 @@
-import { render } from './render.js';
+import { render } from './framework/render.js';
 
 import InfoPresenter from './presenter/info-presenter.js';
 import BoardPresenter from './presenter/board-presenter.js';

@@ -1,5 +1,5 @@
 import InfoView from '../view/trip-info-view';
-import { render, RenderPosition } from '../render';
+import { render, RenderPosition } from '../framework/render.js';
 
 const { AFTERBEGIN } = RenderPosition;
 

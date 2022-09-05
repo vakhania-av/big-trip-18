@@ -1,5 +1,4 @@
-import { createElement } from '../render';
-
+import AbstractView from '../framework/view/abstract-view.js';
 import { isCheckedOffer, humanizeDate } from '../utils.js';
 
 const createOffersTemplate = (point, offers) => {
@@ -139,29 +138,18 @@ const createEventEditTemplate = (point, offers) => {
   </li>`;
 };
 
-export default class EventEditView {
-  #element = null;
+export default class EventEditView extends AbstractView {
+
   #point = null;
   #offers = null;
 
   constructor (point, offers) {
+    super();
     this.#point = point;
     this.#offers = offers;
   }
 
   get template () {
     return createEventEditTemplate(this.#point, this.#offers);
-  }
-
-  get element () {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
-
-    return this.#element;
-  }
-
-  removeElement () {
-    this.#element = null;
   }
 }
