@@ -1,5 +1,4 @@
-import { createElement } from '../render';
-
+import AbstractView from '../framework/view/abstract-view.js';
 import { isCheckedOffer, humanizeDate } from '../utils.js';
 
 const createOffersTemplate = (point, offers) => {
@@ -139,12 +138,13 @@ const createEventEditTemplate = (point, offers) => {
   </li>`;
 };
 
-export default class EventEditView {
-  #element = null;
+export default class EventEditView extends AbstractView {
+
   #point = null;
   #offers = null;
 
   constructor (point, offers) {
+    super();
     this.#point = point;
     this.#offers = offers;
   }
@@ -153,15 +153,23 @@ export default class EventEditView {
     return createEventEditTemplate(this.#point, this.#offers);
   }
 
-  get element () {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
+  setItemClickHandler = (cb) => {
+    this._callback.click = cb;
+    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#clickHandler);
+  };
 
-    return this.#element;
-  }
+  setFormSubmitHandler = (cb) => {
+    this._callback.formSubmit = cb;
+    this.element.querySelector('.event--edit').addEventListener('submit', this.#formSubmitHandler);
+  };
 
-  removeElement () {
-    this.#element = null;
-  }
+  #clickHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.click();
+  };
+
+  #formSubmitHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.formSubmit();
+  };
 }

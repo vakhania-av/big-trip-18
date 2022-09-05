@@ -1,4 +1,4 @@
-import { render } from '../render.js';
+import { render, replace } from '../framework/render.js';
 
 import EventEditView from '../view/event-edit-view.js';
 import EventItemView from '../view/event-item-view.js';
@@ -49,11 +49,11 @@ export default class BoardPresenter {
     const editFormComponent = new EventEditView(point, offers);
 
     const replacePointToForm = () => {
-      this.#listComponent.element.replaceChild(editFormComponent.element, pointComponent.element);
+      replace(editFormComponent, pointComponent);
     };
 
     const replaceFormToPoint = () => {
-      this.#listComponent.element.replaceChild(pointComponent.element, editFormComponent.element);
+      replace(pointComponent, editFormComponent);
     };
 
     const onEscKeyDown = (evt) => {
@@ -64,18 +64,17 @@ export default class BoardPresenter {
       }
     };
 
-    pointComponent.element.querySelector('.event__rollup-btn').addEventListener('click', () => {
+    pointComponent.setEditClickHandler(() => {
       replacePointToForm();
       document.addEventListener('keydown', onEscKeyDown);
     });
 
-    editFormComponent.element.querySelector('.event--edit').addEventListener('submit', (evt) => {
-      evt.preventDefault();
+    editFormComponent.setFormSubmitHandler(() => {
       replaceFormToPoint();
       document.removeEventListener('keydown', onEscKeyDown);
     });
 
-    editFormComponent.element.querySelector('.event__rollup-btn').addEventListener('click', () => {
+    editFormComponent.setItemClickHandler(() => {
       replaceFormToPoint();
       document.removeEventListener('keydown', onEscKeyDown);
     });
