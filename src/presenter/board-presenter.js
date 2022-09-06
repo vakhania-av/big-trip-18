@@ -5,16 +5,19 @@ import EventItemView from '../view/event-item-view.js';
 import EventListView from '../view/event-list-view.js';
 import SortView from '../view/trip-sort-view.js';
 import NoEventView from '../view/no-event-view.js';
+import { EMPTY_POINT_MESSAGE } from '../const.js';
 
 export default class BoardPresenter {
 
   #container = null;
   #pointModel = null;
+  #emptyPointMessage = null;
 
   #listComponent = new EventListView();
 
   #points = [];
   #offers = [];
+  #destinations = [];
 
   constructor (container, pointModel) {
     this.#container = container;
@@ -24,6 +27,7 @@ export default class BoardPresenter {
   init = () => {
     this.#points = [...this.#pointModel.points];
     this.#offers = [...this.#pointModel.offers];
+    this.#destinations = [...this.#pointModel.destinations];
 
     this.#renderBoard();
   };
@@ -31,22 +35,23 @@ export default class BoardPresenter {
   // Отрисовка доски (контейнера)
   #renderBoard = () => {
     render(new SortView(), this.#container);
-    render(this.#listComponent, this.#container);
+
+    this.#emptyPointMessage = EMPTY_POINT_MESSAGE.EVERYTHING;
 
     if (!this.#points.length) {
-      render(new NoEventView(), this.#listComponent.element);
+      render(new NoEventView(this.#emptyPointMessage), this.#container);
       return;
     }
 
-    for (let i = 0; i < this.#points.length; i++) {
-      this.#renderPoint(this.#points[i], this.#offers);
-    }
+    render(this.#listComponent, this.#container);
+
+    this.#points.forEach((point) => this.#renderPoint(point, this.#offers, this.#destinations));
   };
 
   // Отрисовка компонентов точек маршрута и формы редактирования
-  #renderPoint = (point, offers) => {
-    const pointComponent = new EventItemView(point);
-    const editFormComponent = new EventEditView(point, offers);
+  #renderPoint = (point, offers, destinations) => {
+    const pointComponent = new EventItemView(point, offers, destinations);
+    const editFormComponent = new EventEditView(point, offers, destinations);
 
     const replacePointToForm = () => {
       replace(editFormComponent, pointComponent);
