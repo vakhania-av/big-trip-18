@@ -33,8 +33,6 @@ const createEventItemTemplate = (point, offers, destinations) => {
 
   const selectedOffers = getCheckedOffers(point, offers);
   const selectedDestinations = getCheckedDestination(point, destinations);
-  debugger
-
 
   return `<li class="trip-events__item">
     <div class="event">
