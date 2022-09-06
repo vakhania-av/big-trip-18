@@ -53,5 +53,13 @@ const DESCRIPTIONS = [
 // Количество фотографий
 const PHOTOS_COUNT = 10;
 
-export { CITIES, TYPES, OFFERS, DESCRIPTIONS, PHOTOS_COUNT };
+
+// Шаблон сообщений для фильтров
+const EMPTY_POINT_MESSAGE = {
+  EVERYTHING: 'Click New Event to create your first point',
+  FUTURE: 'There are no future events now',
+  PAST: 'There are no past events now'
+};
+
+export { CITIES, TYPES, OFFERS, DESCRIPTIONS, PHOTOS_COUNT, EMPTY_POINT_MESSAGE };
 

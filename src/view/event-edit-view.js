@@ -1,5 +1,5 @@
 import AbstractView from '../framework/view/abstract-view.js';
-import { isCheckedOffer, humanizeDate } from '../utils.js';
+import { isCheckedOffer, humanizeDate, getCheckedDestination } from '../utils.js';
 
 const createOffersTemplate = (point, offers) => {
   const offersByType = offers.find((offer) => point.type === offer.type || point.type);
@@ -17,12 +17,13 @@ const createOffersTemplate = (point, offers) => {
   )).join('');
 };
 
-const createEventEditTemplate = (point, offers) => {
-  const { dateFrom, dateTo, destination, basePrice, type } = point;
+const createEventEditTemplate = (point, offers, destinations) => {
+  const { dateFrom, dateTo, basePrice, type } = point;
 
   const dateFromFormatted = humanizeDate(dateFrom);
   const dateToFormatted = humanizeDate(dateTo);
   const typeFormatted = `${type[0].toUpperCase()}${type.slice(1)}`;
+  const selectedDestination = getCheckedDestination(point, destinations);
 
   return `<li class="trip-events__item">
     <form class="event event--edit" action="#" method="post">
@@ -90,7 +91,7 @@ const createEventEditTemplate = (point, offers) => {
           <label class="event__label  event__type-output" for="event-destination-1">
             ${typeFormatted}
           </label>
-          <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destination.name}" list="destination-list-1">
+          <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${selectedDestination.name}" list="destination-list-1">
           <datalist id="destination-list-1">
             <option value="Amsterdam"></option>
             <option value="Geneva"></option>
@@ -131,7 +132,7 @@ const createEventEditTemplate = (point, offers) => {
 
         <section class="event__section  event__section--destination">
           <h3 class="event__section-title  event__section-title--destination">Destination</h3>
-          <p class="event__destination-description">${destination.description}</p>
+          <p class="event__destination-description">${selectedDestination.description}</p>
         </section>
       </section>
     </form>
@@ -142,15 +143,17 @@ export default class EventEditView extends AbstractView {
 
   #point = null;
   #offers = null;
+  #destinations = null;
 
-  constructor (point, offers) {
+  constructor (point, offers, destinations) {
     super();
     this.#point = point;
     this.#offers = offers;
+    this.#destinations = destinations;
   }
 
   get template () {
-    return createEventEditTemplate(this.#point, this.#offers);
+    return createEventEditTemplate(this.#point, this.#offers, this.#destinations);
   }
 
   setItemClickHandler = (cb) => {

@@ -1,18 +1,27 @@
 import AbstractView from '../framework/view/abstract-view.js';
-import { calculateDurationInPoint, humanizePointDate, humanizePointTime } from '../utils';
+import { calculateDurationInPoint, humanizePointDate, humanizePointTime, getCheckedOffers, getCheckedDestination } from '../utils';
 
-const createOffersTemplate = (offers) => (
-  offers.filter((offer, index, array) => array.indexOf(offer) === index)
+const createOffersTemplate = (offers) => {
+  if (!offers.length) {
+    return (
+      `<li class="event__offer">
+        <span class="event__offer-title">No offers available</span>
+      </li>`
+    );
+  }
+
+  return offers.filter((offer, index, array) => array.indexOf(offer) === index)
     .map(({title, price}) =>
       `<li class="event__offer">
       <span class="event__offer-title">${title}</span>
       &plus;&euro;&nbsp;
       <span class="event__offer-price">${price}</span>
     </li>`
-    ).join(''));
+    ).join('');
+};
 
-const createEventItemTemplate = (point) => {
-  const { basePrice, dateFrom, dateTo, offers, destination, isFavorite, type } = point;
+const createEventItemTemplate = (point, offers, destinations) => {
+  const { basePrice, dateFrom, dateTo, isFavorite, type } = point;
 
   const dateFromFormatted = humanizePointDate(dateFrom);
   const timeFrom = humanizePointTime(dateFrom);
@@ -22,6 +31,10 @@ const createEventItemTemplate = (point) => {
   const favoriteClass = isFavorite ? 'event__favorite-btn--active' : '';
   const typeFormatted = `${type[0].toUpperCase()}${type.slice(1)}`;
 
+  const selectedOffers = getCheckedOffers(point, offers);
+  const selectedDestinations = getCheckedDestination(point, destinations);
+  debugger
+
 
   return `<li class="trip-events__item">
     <div class="event">
@@ -29,7 +42,7 @@ const createEventItemTemplate = (point) => {
       <div class="event__type">
         <img class="event__type-icon" width="42" height="42" src="img/icons/${type}.png" alt="Event type icon">
       </div>
-      <h3 class="event__title">${typeFormatted} ${destination.name}</h3>
+      <h3 class="event__title">${typeFormatted} ${selectedDestinations.name}</h3>
       <div class="event__schedule">
         <p class="event__time">
           <time class="event__start-time" datetime="${dateFrom}">${timeFrom}</time>
@@ -43,7 +56,7 @@ const createEventItemTemplate = (point) => {
       </p>
       <h4 class="visually-hidden">Offers:</h4>
       <ul class="event__selected-offers">
-        ${createOffersTemplate(offers)}
+        ${createOffersTemplate(selectedOffers)}
       </ul>
       <button class="event__favorite-btn ${favoriteClass}" type="button">
         <span class="visually-hidden">Add to favorite</span>
@@ -61,14 +74,18 @@ const createEventItemTemplate = (point) => {
 export default class EventItemView extends AbstractView {
 
   #point = null;
+  #offers = null;
+  #destinations = null;
 
-  constructor (point) {
+  constructor (point, offers, destinations) {
     super();
     this.#point = point;
+    this.#offers = offers;
+    this.#destinations = destinations;
   }
 
   get template () {
-    return createEventItemTemplate(this.#point);
+    return createEventItemTemplate(this.#point, this.#offers, this.#destinations);
   }
 
   setEditClickHandler = (cb) => {
