@@ -1,4 +1,4 @@
-import { render, replace } from '../framework/render.js';
+import { render, RenderPosition, replace } from '../framework/render.js';
 
 import EventEditView from '../view/event-edit-view.js';
 import EventItemView from '../view/event-item-view.js';
@@ -14,6 +14,9 @@ export default class BoardPresenter {
   #emptyPointMessage = null;
 
   #listComponent = new EventListView();
+  #sortComponent = new SortView();
+  #noPointComponent = null;
+  #pointPresenter = new Map();
 
   #points = [];
   #offers = [];
@@ -34,18 +37,15 @@ export default class BoardPresenter {
 
   // Отрисовка доски (контейнера)
   #renderBoard = () => {
-    render(new SortView(), this.#container);
-
+    this.#renderSort();
     this.#emptyPointMessage = EMPTY_POINT_MESSAGE.EVERYTHING;
 
     if (!this.#points.length) {
-      render(new NoEventView(this.#emptyPointMessage), this.#container);
+      this.#renderNoPoints(this.#emptyPointMessage);
       return;
     }
 
-    render(this.#listComponent, this.#container);
-
-    this.#points.forEach((point) => this.#renderPoint(point, this.#offers, this.#destinations));
+    this.#renderPointsList();
   };
 
   // Отрисовка компонентов точек маршрута и формы редактирования
@@ -85,5 +85,23 @@ export default class BoardPresenter {
     });
 
     render(pointComponent, this.#listComponent.element);
+  };
+
+  #renderPointsList = () => {
+    render(this.#listComponent, this.#container);
+    this.#renderPoints();
+  };
+
+  #renderSort = () => {
+    render(this.#sortComponent, this.#container, RenderPosition.AFTERBEGIN);
+  };
+
+  #renderPoints = () => {
+    this.#points.forEach((point) => this.#renderPoint(point, this.#offers, this.#destinations));
+  };
+
+  #renderNoPoints = (message) => {
+    this.#noPointComponent = new NoEventView(message);
+    render(this.#noPointComponent, this.#container, RenderPosition.AFTERBEGIN);
   };
 }
