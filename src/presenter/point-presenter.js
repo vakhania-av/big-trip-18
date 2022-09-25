@@ -12,14 +12,16 @@ export default class PointPresenter {
   #container = null;
   #pointComponent = null;
   #pointEditComponent = null;
+  #changeData = null;
 
   #point = null;
   #offers = [];
   #destinations = [];
   #mode = Mode.DEFAULT;
 
-  constructor (pointListContainer) {
+  constructor (pointListContainer, changeData) {
     this.#container = pointListContainer;
+    this.#changeData = changeData;
   }
 
   init = (point, offers, destinations) => {
@@ -34,8 +36,9 @@ export default class PointPresenter {
     this.#pointEditComponent = new EventEditView(point, offers, destinations);
 
     this.#pointComponent.setEditClickHandler(this.#handleEditClick);
+    this.#pointComponent.setFavoriteClickHandler(this.#handleFavoriteClick);
     this.#pointEditComponent.setFormSubmitHandler(this.#handleFormSubmit);
-    this.#pointEditComponent.setItemClickHandler(this.#handeleCloseEditForm);
+    this.#pointEditComponent.setItemClickHandler(this.#handleCloseEditForm);
 
     if (!prevPointComponent || !prevPointEditComponent) {
       render(this.#pointComponent, this.#container);
@@ -76,12 +79,17 @@ export default class PointPresenter {
     this.#replacePointToForm();
   };
 
-  #handeleCloseEditForm = () => {
+  #handleCloseEditForm = () => {
     this.#replaceFormToPoint();
   };
 
-  #handleFormSubmit = () => {
+  #handleFormSubmit = (point) => {
+    this.#changeData(point, this.#offers, this.#destinations);
     this.#replaceFormToPoint();
+  };
+
+  #handleFavoriteClick = () => {
+    this.#changeData({...this.#point, isFavorite: !this.#point.isFavorite}, this.#offers, this.#destinations);
   };
 
   destroy = () => {
