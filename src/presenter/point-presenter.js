@@ -1,6 +1,6 @@
 import EventEditView from '../view/event-edit-view.js';
 import EventItemView from '../view/event-item-view.js';
-import { render, replace } from '../framework/render.js';
+import { render, replace, remove } from '../framework/render.js';
 
 const Mode = {
   DEFAULT: 'DEFAULT',
@@ -27,6 +27,9 @@ export default class PointPresenter {
     this.#offers = offers;
     this.#destinations = destinations;
 
+    const prevPointComponent = this.#pointComponent;
+    const prevPointEditComponent = this.#pointEditComponent;
+
     this.#pointComponent = new EventItemView(point, offers, destinations);
     this.#pointEditComponent = new EventEditView(point, offers, destinations);
 
@@ -34,7 +37,22 @@ export default class PointPresenter {
     this.#pointEditComponent.setFormSubmitHandler(this.#handleFormSubmit);
     this.#pointEditComponent.setItemClickHandler(this.#handeleCloseEditForm);
 
-    render(this.#pointComponent, this.#container);
+    if (!prevPointComponent || !prevPointEditComponent) {
+      render(this.#pointComponent, this.#container);
+      return;
+    }
+
+    if (this.#container.contains(prevPointComponent.element)) {
+      replace(this.#pointComponent, prevPointComponent);
+    }
+
+    if (this.#container.contains(prevPointEditComponent.element)) {
+      replace(this.#pointEditComponent, prevPointEditComponent);
+    }
+
+    remove(prevPointComponent);
+    remove(prevPointEditComponent);
+
   };
 
   #escKeyDownHandler = (evt) => {
@@ -64,5 +82,10 @@ export default class PointPresenter {
 
   #handleFormSubmit = () => {
     this.#replaceFormToPoint();
+  };
+
+  destroy = () => {
+    remove(this.#pointComponent);
+    remove(this.#pointEditComponent);
   };
 }
