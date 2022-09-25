@@ -51,6 +51,12 @@ export default class BoardPresenter {
   #renderPoint = (point, offers, destinations) => {
     const pointPresenter = new PointPresenter(this.#listComponent.element);
     pointPresenter.init(point, offers, destinations);
+    this.#pointPresenter.set(point.id, pointPresenter);
+  };
+
+  #clearPointList = () => {
+    this.#pointPresenter.forEach((presenter) => presenter.destroy());
+    this.#pointPresenter.clear();
   };
 
   #renderPointsList = () => {

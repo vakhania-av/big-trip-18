@@ -1,8 +1,8 @@
 import { isPointInPast, isPointInFuture } from '../utils/filter.js';
 
 export const generateFilters = (points) => {
-  const pointsInPast = points.filter((point) => isPointInFuture(point.dateFrom));
-  const pointsInFuture = points.filter((point) => isPointInPast(point.dateTo));
+  const pointsInPast = points.filter((point) => isPointInPast(point.dateTo));
+  const pointsInFuture = points.filter((point) => isPointInFuture(point.dateFrom));
 
   return {
     EVERYTHING: {
