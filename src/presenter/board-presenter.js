@@ -1,11 +1,10 @@
-import { render, RenderPosition, replace } from '../framework/render.js';
+import { render, RenderPosition } from '../framework/render.js';
 
-import EventEditView from '../view/event-edit-view.js';
-import EventItemView from '../view/event-item-view.js';
 import EventListView from '../view/event-list-view.js';
 import SortView from '../view/trip-sort-view.js';
 import NoEventView from '../view/no-event-view.js';
 import { EMPTY_POINT_MESSAGE } from '../const.js';
+import PointPresenter from './point-presenter.js';
 
 export default class BoardPresenter {
 
@@ -50,41 +49,8 @@ export default class BoardPresenter {
 
   // Отрисовка компонентов точек маршрута и формы редактирования
   #renderPoint = (point, offers, destinations) => {
-    const pointComponent = new EventItemView(point, offers, destinations);
-    const editFormComponent = new EventEditView(point, offers, destinations);
-
-    const replacePointToForm = () => {
-      replace(editFormComponent, pointComponent);
-    };
-
-    const replaceFormToPoint = () => {
-      replace(pointComponent, editFormComponent);
-    };
-
-    const onEscKeyDown = (evt) => {
-      if (evt.key.includes('Esc', 'Escape')) {
-        evt.preventDefault();
-        replaceFormToPoint();
-        document.removeEventListener('keydown', onEscKeyDown);
-      }
-    };
-
-    pointComponent.setEditClickHandler(() => {
-      replacePointToForm();
-      document.addEventListener('keydown', onEscKeyDown);
-    });
-
-    editFormComponent.setFormSubmitHandler(() => {
-      replaceFormToPoint();
-      document.removeEventListener('keydown', onEscKeyDown);
-    });
-
-    editFormComponent.setItemClickHandler(() => {
-      replaceFormToPoint();
-      document.removeEventListener('keydown', onEscKeyDown);
-    });
-
-    render(pointComponent, this.#listComponent.element);
+    const pointPresenter = new PointPresenter(this.#listComponent.element);
+    pointPresenter.init(point, offers, destinations);
   };
 
   #renderPointsList = () => {
