@@ -52,7 +52,7 @@ export default class BoardPresenter {
 
   // Отрисовка компонентов точек маршрута и формы редактирования
   #renderPoint = (point, offers, destinations) => {
-    const pointPresenter = new PointPresenter(this.#listComponent.element, this.#handlePointChange);
+    const pointPresenter = new PointPresenter(this.#listComponent.element, this.#handlePointChange, this.#handleModeChange);
     pointPresenter.init(point, offers, destinations);
     this.#pointPresenter.set(point.id, pointPresenter);
   };
@@ -70,6 +70,10 @@ export default class BoardPresenter {
   #handlePointChange = (updatedPoint, offers, destinations) => {
     this.#boardPoints = updateItem(this.#boardPoints, updatedPoint);
     this.#pointPresenter.get(updatedPoint.id).init(updatedPoint, offers, destinations);
+  };
+
+  #handleModeChange = () => {
+    this.#pointPresenter.forEach((presenter) => presenter.resetView());
   };
 
   #renderSort = () => {
