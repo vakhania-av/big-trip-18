@@ -5,12 +5,15 @@ import SortView from '../view/trip-sort-view.js';
 import NoEventView from '../view/no-event-view.js';
 import { EMPTY_POINT_MESSAGE } from '../const.js';
 import PointPresenter from './point-presenter.js';
+import updateItem from '../utils/common.js';
 
 export default class BoardPresenter {
 
   #container = null;
   #pointModel = null;
   #emptyPointMessage = null;
+
+  #boardPoints = [];
 
   #listComponent = new EventListView();
   #sortComponent = new SortView();
@@ -62,6 +65,11 @@ export default class BoardPresenter {
   #renderPointsList = () => {
     render(this.#listComponent, this.#container);
     this.#renderPoints();
+  };
+
+  #handlePointChange = (updatedPoint, offers, destinations) => {
+    this.#boardPoints = updateItem(this.#boardPoints, updatedPoint);
+    this.#pointPresenter.get(updatedPoint.id).init(updatedPoint, offers, destinations);
   };
 
   #renderSort = () => {
