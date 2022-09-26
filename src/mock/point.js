@@ -1,12 +1,10 @@
 /** Описание структуры данных "Точка маршрута" **/
 
 import dayjs from 'dayjs';
+import { nanoid } from 'nanoid';
 
 import { getRandomInt, getRandomArrayElement, getUniqueNumbersArray } from '../utils.js';
 import { TYPES } from '../const.js';
-
-// Функция получения идентификатора для точки маршрута
-const getPointId = () => String(getRandomInt(1, 50));
 
 const generateDate = () => {
   const MAX_DATE_GAP = 5000;
@@ -29,7 +27,7 @@ export const generatePoint = () => {
     dateFrom,
     dateTo,
     destination: 1,
-    id: getPointId(),
+    id: nanoid(),
     isFavorite: Boolean(getRandomInt(0, 1)),
     offers: getUniqueNumbersArray(3, getRandomInt),
     type: getRandomArrayElement(TYPES),
