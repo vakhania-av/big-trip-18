@@ -75,12 +75,12 @@ export default class SortView extends AbstractView {
   };
 
   #sortTypeChangeHandler = (evt) => {
-    if (!evt.target.closest('a')) {
+    if (!evt.target.closest('input')) {
       return;
     }
 
     evt.preventDefault();
-    this._callback.sortTypeChange(evt.target.dataset.SortType);
+    this._callback.sortTypeChange(evt.target.dataset.sortType);
   };
 }
 
