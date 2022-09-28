@@ -61,5 +61,20 @@ const EMPTY_POINT_MESSAGE = {
   PAST: 'There are no past events now'
 };
 
-export { CITIES, TYPES, OFFERS, DESCRIPTIONS, PHOTOS_COUNT, EMPTY_POINT_MESSAGE };
+// Типы сортировки
+const SortType = {
+  DEFAULT: 'day',
+  DURATION: 'time',
+  PRICE: 'price'
+};
+
+export {
+  CITIES,
+  TYPES,
+  OFFERS,
+  DESCRIPTIONS,
+  PHOTOS_COUNT,
+  EMPTY_POINT_MESSAGE,
+  SortType
+};
 
