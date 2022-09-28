@@ -17,11 +17,10 @@ export default class BoardPresenter {
   #listComponent = new EventListView();
   #sortComponent = new SortView();
   #noPointComponent = null;
+
   #pointPresenter = new Map();
 
   #currentSortType = SortType.DEFAULT;
-
-  #sourcedBoardPoints = [];
 
   #boardPoints = [];
   #boardOffers = [];
@@ -34,15 +33,19 @@ export default class BoardPresenter {
 
   init = () => {
     this.#boardPoints = [...this.#pointModel.points];
-    this.#sourcedBoardPoints = [...this.#pointModel.points];
     this.#boardOffers = [...this.#pointModel.offers];
     this.#boardDestinations = [...this.#pointModel.destinations];
+
+    this.#sortPoints(SortType.DEFAULT);
 
     this.#renderBoard();
   };
 
   #sortPoints = (sortType) => {
     switch (sortType) {
+      case SortType.DEFAULT:
+        this.#boardPoints.sort(sortByDate);
+        break;
       case SortType.DURATION:
         this.#boardPoints.sort(sortByDuration);
         break;
@@ -50,7 +53,7 @@ export default class BoardPresenter {
         this.#boardPoints.sort(sortByPrice);
         break;
       default:
-        this.#boardPoints.sort(sortByDate);
+        throw new Error(`Unreachable sort type: ${sortType}`);
     }
 
     this.#currentSortType = sortType;
@@ -71,7 +74,7 @@ export default class BoardPresenter {
 
   // Отрисовка компонентов точек маршрута и формы редактирования
   #renderPoint = (point, offers, destinations) => {
-    const pointPresenter = new PointPresenter(this.#listComponent.element, this.#handlePointChange, this.#handleModeChange);
+    const pointPresenter = new PointPresenter(this.#listComponent.element, this.#pointChangeHandler, this.#modeChangeHandler);
     pointPresenter.init(point, offers, destinations);
     this.#pointPresenter.set(point.id, pointPresenter);
   };
@@ -86,20 +89,19 @@ export default class BoardPresenter {
     this.#renderPoints();
   };
 
-  #handlePointChange = (updatedPoint) => {
+  #pointChangeHandler = (updatedPoint) => {
     this.#boardPoints = updateItem(this.#boardPoints, updatedPoint);
-    this.#sourcedBoardPoints = updateItem(this.#sourcedBoardPoints, updatedPoint);
     this.#pointPresenter.get(updatedPoint.id).init(updatedPoint, this.#boardOffers, this.#boardDestinations);
   };
 
-  #handleModeChange = () => {
+  #modeChangeHandler = () => {
     this.#pointPresenter.forEach((presenter) => presenter.resetView());
   };
 
   #renderSort = () => {
     render(this.#sortComponent, this.#container, RenderPosition.AFTERBEGIN);
     this.#sortPoints(this.#currentSortType);
-    this.#sortComponent.setSortTypeChangeHandler(this.#handleSortTypeChange);
+    this.#sortComponent.setSortTypeChangeHandler(this.#sortTypeChangeHandler);
   };
 
   #renderPoints = () => {
@@ -112,7 +114,7 @@ export default class BoardPresenter {
   };
 
   // Обработчик смены сортировки
-  #handleSortTypeChange = (sortType) => {
+  #sortTypeChangeHandler = (sortType) => {
     if (this.#currentSortType === sortType) {
       return;
     }
