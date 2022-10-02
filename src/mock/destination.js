@@ -1,4 +1,5 @@
 /** Описание структуры данных "Пункт назначения" **/
+
 export const generateDestinations = () => ([
   {
     id: 1,
