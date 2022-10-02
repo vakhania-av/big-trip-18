@@ -1,5 +1,6 @@
-import AbstractView from '../framework/view/abstract-view.js';
+import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import { isCheckedOffer, humanizeDate, getCheckedDestination } from '../utils.js';
+import { BLANK_POINT } from '../const.js';
 
 const createOffersTemplate = (point, offers) => {
   const offersByType = offers.find((offer) => point.type === offer.type || point.type);
@@ -139,22 +140,28 @@ const createEventEditTemplate = (point, offers, destinations) => {
   </li>`;
 };
 
-export default class EventEditView extends AbstractView {
-
-  #point = null;
+export default class EventEditView extends AbstractStatefulView {
   #offers = null;
   #destinations = null;
 
-  constructor (point, offers, destinations) {
+  constructor (point = BLANK_POINT, offers, destinations) {
     super();
-    this.#point = point;
+    this._state = EventEditView.parseStateToPoint(point);
     this.#offers = offers;
     this.#destinations = destinations;
   }
 
   get template () {
-    return createEventEditTemplate(this.#point, this.#offers, this.#destinations);
+    return createEventEditTemplate(this._state, this.#offers, this.#destinations);
   }
+
+  static parsePointToState = (point) => ({...point});
+
+  static parseStateToPoint = (state) => {
+    const point = {...state};
+
+    return point;
+  };
 
   setItemClickHandler = (cb) => {
     this._callback.click = cb;
@@ -173,6 +180,6 @@ export default class EventEditView extends AbstractView {
 
   #formSubmitHandler = (evt) => {
     evt.preventDefault();
-    this._callback.formSubmit(this.#point);
+    this._callback.formSubmit(EventEditView.parseStateToPoint(this._state));
   };
 }

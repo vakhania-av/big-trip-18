@@ -1,3 +1,7 @@
+import { nanoid } from 'nanoid';
+import dayjs from 'dayjs';
+import { getRandomInt } from './utils.js';
+
 /** Описание констант **/
 
 // Города
@@ -68,6 +72,18 @@ const SortType = {
   PRICE: 'price'
 };
 
+// Пустая точка маршрута
+const BLANK_POINT = {
+  id: nanoid(),
+  basePrice: 0,
+  dateTo: dayjs().toDate(),
+  dateFrom: dayjs().toDate(),
+  destination: getRandomInt(1, 5),
+  isFavorite: false,
+  offers: [],
+  type: ''
+};
+
 export {
   CITIES,
   TYPES,
@@ -75,6 +91,7 @@ export {
   DESCRIPTIONS,
   PHOTOS_COUNT,
   EMPTY_POINT_MESSAGE,
-  SortType
+  SortType,
+  BLANK_POINT
 };
 
