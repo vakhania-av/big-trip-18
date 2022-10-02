@@ -183,6 +183,18 @@ export default class EventEditView extends AbstractStatefulView {
     this._callback.formSubmit(EventEditView.parseStateToPoint(this._state));
   };
 
+  _restoreHandlers = () => {
+    this.#setInnerHandlers();
+    this.setFormSubmitHandler(this._callback.formSubmit);
+    this.#clickHandler(this._callback.click);
+  };
+
+  #setInnerHandlers = () => {
+    this.element.querySelector('.event__type-group').addEventListener('change', this.#pointTypeChangeHandler);
+    this.element.querySelector('.event__input--destination').addEventListener('change', this.#destinationChangeHandler);
+    this.element.querySelector('.event__available-offers').addEventListener('change', this.#offerChooseHandler);
+  };
+
   // Обработчик смены точки маршрута
   #pointTypeChangeHandler = (evt) => {
     evt.preventDefault();
@@ -214,5 +226,20 @@ export default class EventEditView extends AbstractStatefulView {
     });
   };
 
+  #offerChooseHandler = (evt) => {
+    evt.preventDefault();
+
+    if (evt.target.tagName === 'INPUT') {
+      const currentOfferId = Number(evt.target.dataset.offerId);
+      const currentOfferIndex = this._state.offers.indexOf(currentOfferId);
+
+      if (!currentOfferIndex) {
+        this._state.offers.push(currentOfferId);
+        return;
+      }
+
+      this._state.offers.splice(currentOfferIndex, 1);
+    }
+  };
 
 }
