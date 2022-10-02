@@ -182,4 +182,37 @@ export default class EventEditView extends AbstractStatefulView {
     evt.preventDefault();
     this._callback.formSubmit(EventEditView.parseStateToPoint(this._state));
   };
+
+  // Обработчик смены точки маршрута
+  #pointTypeChangeHandler = (evt) => {
+    evt.preventDefault();
+
+    if (evt.target.tagName === 'INPUT') {
+      this.updateElement({
+        type: evt.target.value,
+        offers: []
+      });
+    }
+  };
+
+  // Обработчик пункта назначения
+  #destinationChangeHandler = (evt) => {
+    evt.preventDefault();
+
+    if (!evt.target.value) {
+      this.updateElement({
+        destination: ''
+      });
+
+      return;
+    }
+
+    const selectedDestination = this.#destinations.find((destination) => evt.target.value === destination.name);
+
+    this.updateElement({
+      destination: selectedDestination.id
+    });
+  };
+
+
 }
