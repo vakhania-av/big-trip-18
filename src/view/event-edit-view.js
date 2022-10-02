@@ -86,17 +86,6 @@ const createOffersTemplate = (point, offers) => {
       </div>
     </section>`
   );
-
-  /*return uniqueOffers.map((offer, index) => (
-    `<div class="event__offer-selector">
-    <input class="event__offer-checkbox  visually-hidden" id="event-offer-luggage-${index}" type="checkbox" name="event-offer-luggage" ${isCheckedOffer(point, offer) ? 'checked' : ''}>
-    <label class="event__offer-label" for="event-offer-luggage-${index}">
-      <span class="event__offer-title">${offer.title}</span>
-        &plus;&euro;&nbsp;
-      <span class="event__offer-price">${offer.price}</span>
-    </label>
-  </div>`
-  )).join('');*/
 };
 
 const createEventEditTemplate = (point, offers, destinations) => {
@@ -183,6 +172,7 @@ export default class EventEditView extends AbstractStatefulView {
     this._state = EventEditView.parseStateToPoint(point);
     this.#offers = offers;
     this.#destinations = destinations;
+    this.#setInnerHandlers();
   }
 
   get template () {
