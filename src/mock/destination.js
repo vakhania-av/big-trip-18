@@ -1,5 +1,7 @@
 /** Описание структуры данных "Пункт назначения" **/
 
+import { getRandomInt } from '../utils';
+
 export const generateDestinations = () => ([
   {
     id: 1,
@@ -7,15 +9,15 @@ export const generateDestinations = () => ([
     name: 'Riga',
     pictures: [
       {
-        src: `http://picsum.photos/248/152?r=${Math.random()}`,
+        src: `http://picsum.photos/248/152?r=${getRandomInt(1, 100)}`,
         description: 'The Guild House of the Brotherhood of Blackheads'
       },
       {
-        src: `http://picsum.photos/248/152?r=${Math.random()}`,
+        src: `http://picsum.photos/248/152?r=${getRandomInt(1, 100)}`,
         description: 'The tallest building in Riga'
       },
       {
-        src: `http://picsum.photos/248/152?r=${Math.random()}`,
+        src: `http://picsum.photos/248/152?r=${getRandomInt(1, 100)}`,
         description: 'Freedom Monument'
       }
     ]
@@ -26,15 +28,15 @@ export const generateDestinations = () => ([
     name: 'Vilnius',
     pictures: [
       {
-        src: `http://picsum.photos/248/152?r=${Math.random()}`,
+        src: `http://picsum.photos/248/152?r=${getRandomInt(1, 100)}`,
         description: 'Vilnius Old Town'
       },
       {
-        src: `http://picsum.photos/248/152?r=${Math.random()}`,
+        src: `http://picsum.photos/248/152?r=${getRandomInt(1, 100)}`,
         description: 'Uzupis District'
       },
       {
-        src: `http://picsum.photos/248/152?r=${Math.random()}`,
+        src: `http://picsum.photos/248/152?r=${getRandomInt(1, 100)}`,
         description: 'Jewish Quarter'
       }
     ]
@@ -45,15 +47,15 @@ export const generateDestinations = () => ([
     name: 'Tallinn',
     pictures: [
       {
-        src: `http://picsum.photos/248/152?r=${Math.random()}`,
+        src: `http://picsum.photos/248/152?r=${getRandomInt(1, 100)}`,
         description: 'Tallinn\'s Old Town'
       },
       {
-        src: `http://picsum.photos/248/152?r=${Math.random()}`,
+        src: `http://picsum.photos/248/152?r=${getRandomInt(1, 100)}`,
         description: 'Kadriorg\'s Baroque palace park'
       },
       {
-        src: `http://picsum.photos/248/152?r=${Math.random()}`,
+        src: `http://picsum.photos/248/152?r=${getRandomInt(1, 100)}`,
         description: 'Toompea Castle'
       }
     ]

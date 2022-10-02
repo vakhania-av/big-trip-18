@@ -3,8 +3,7 @@
 import dayjs from 'dayjs';
 import { nanoid } from 'nanoid';
 
-import { getRandomInt, getRandomArrayElement, getUniqueNumbersArray } from '../utils.js';
-import { TYPES } from '../const.js';
+import { getRandomInt } from '../utils.js';
 
 const generateDate = () => {
   const MAX_DATE_GAP = 5000;
@@ -26,11 +25,11 @@ export const generatePoint = () => {
     basePrice: getRandomInt(10, 800),
     dateFrom,
     dateTo,
-    destination: getRandomInt(1, 3),
+    destination: 2,
     id: nanoid(),
     isFavorite: Boolean(getRandomInt(0, 1)),
-    offers: getUniqueNumbersArray(3, getRandomInt),
-    type: getRandomArrayElement(TYPES),
+    offers: [1, 3],
+    type: 'taxi',
   };
 };
 

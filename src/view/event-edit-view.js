@@ -24,6 +24,23 @@ const createAvailableOffersTemplate = (point, availableOffers) => (
   )).join('')
 );
 
+const createOffersTemplate = (point, offers) => {
+  const offersByType = offers.find((offer) => point.type === offer.type);
+
+  if (!offersByType || !offersByType.offers) {
+    return '';
+  }
+
+  return (
+    `<section class="event__section  event__section--offers">
+      <h3 class="event__section-title  event__section-title--offers">Offers</h3>
+      <div class="event__available-offers">
+        ${createAvailableOffersTemplate(point, offersByType)}
+      </div>
+    </section>`
+  );
+};
+
 const createTypeListTemplate = (point, types) => (
   types.map((type) => {
     const pointType = `${type[0].toUpperCase()}${type.slice(1)}`;
@@ -64,26 +81,6 @@ const createDescriptionTemplate = (selectedDestination) => {
       <h3 class="event__section-title  event__section-title--destination">Destination</h3>
       <p class="event__destination-description">${selectedDestination.description}</p>
       ${createImageContainerTemplate(selectedDestination)}
-    </section>`
-  );
-};
-
-const createOffersTemplate = (point, offers) => {
-  const offersByType = offers.find((offer) => point.type === offer.type || point.type);
-  const uniqueOffers = offersByType.offers.filter((item, index, array) => array.indexOf(item) === index);
-
-  if (!offersByType || !offersByType.offers) {
-    return '';
-  }
-
-  offersByType.offers = uniqueOffers ?? offersByType.offers;
-
-  return (
-    `<section class="event__section  event__section--offers">
-      <h3 class="event__section-title  event__section-title--offers">Offers</h3>
-      <div class="event__available-offers">
-        ${createAvailableOffersTemplate(point, offersByType)}
-      </div>
     </section>`
   );
 };
@@ -155,10 +152,9 @@ const createEventEditTemplate = (point, offers, destinations) => {
         </button>
       </header>
       <section class="event__details">
-        <section class="event__section  event__section--offers">
-          ${createOffersTemplate(point, offers)}
-          ${createDescriptionTemplate(selectedDestination)}
-        </section>
+        ${createOffersTemplate(point, offers)}
+        ${createDescriptionTemplate(selectedDestination)}
+      </section>
     </form>
   </li>`;
 };
@@ -169,9 +165,10 @@ export default class EventEditView extends AbstractStatefulView {
 
   constructor (point = BLANK_POINT, offers, destinations) {
     super();
-    this._state = EventEditView.parseStateToPoint(point);
     this.#offers = offers;
     this.#destinations = destinations;
+    this._state = EventEditView.parseStateToPoint(point);
+
     this.#setInnerHandlers();
   }
 

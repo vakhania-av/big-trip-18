@@ -53,7 +53,7 @@ const isCheckedOffer = (offer, point) => point.offers.some((currentOffer) => cur
 
 // Функция сопоставления выбранных дополнительных опций
 const getCheckedOffers = (point, offers) => {
-  const offersByType = offers.find((offer) => (point.type === offer.type || point.type));
+  const offersByType = offers.find((offer) => (point.type === offer.type));
 
   return offersByType.offers.filter((offer) => point.offers.some((id) => id === offer.id));
 };
