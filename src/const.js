@@ -81,7 +81,34 @@ const BLANK_POINT = {
   destination: getRandomInt(1, 5),
   isFavorite: false,
   offers: [],
-  type: ''
+  type: TYPES[0]
+};
+
+// Объект с константами для типов фильтра
+const FILTER_TYPE = {
+  EVERYTHING: 'EVERYTHING',
+  PAST: 'PAST',
+  FUTURE: 'FUTURE'
+};
+
+// Объект с видами обновлений
+const UPDATE_TYPE = {
+  PATCH: 'PATCH',
+  MINOR: 'MINOR',
+  MAJOR: 'MAJOR'
+};
+
+// Объект с типами режима формы
+const FORM_TYPE = {
+  CREATING: 'CREATING',
+  EDITING: 'EDITING'
+};
+
+// Объект с видами действий пользователя
+const UserAction = {
+  ADD_POINT: 'ADD_POINT',
+  DELETE_POINT: 'DELETE_POINT',
+  UPDATE_POINT: 'UPDATE_POINT'
 };
 
 export {
@@ -92,6 +119,10 @@ export {
   PHOTOS_COUNT,
   EMPTY_POINT_MESSAGE,
   SortType,
-  BLANK_POINT
+  BLANK_POINT,
+  FILTER_TYPE,
+  UPDATE_TYPE,
+  FORM_TYPE,
+  UserAction
 };
 
