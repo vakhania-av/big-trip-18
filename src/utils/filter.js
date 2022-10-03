@@ -2,10 +2,22 @@
 
 import dayjs from 'dayjs';
 import isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
+import { FILTER_TYPE } from '../const.js';
 
 dayjs.extend(isSameOrBefore);
 
-const isPointInPast = (date) => date && dayjs().isAfter(date, 'D');
-const isPointInFuture = (date) => date && dayjs().isSameOrBefore(date, 'D');
+export const filterPoints = (filterType, points) => {
+  const pastPoints = points.filter((point) => dayjs().isAfter(dayjs(point.dateFrom), 'D'));
+  const futurePoints = points.filter((point) => dayjs().isSameOrBefore(dayjs(point.dateTo), 'D'));
 
-export { isPointInPast ,isPointInFuture};
+  switch (filterType) {
+    case FILTER_TYPE.EVERYTHING:
+      return points;
+    case FILTER_TYPE.PAST:
+      return pastPoints;
+    case FILTER_TYPE.FUTURE:
+      return futurePoints;
+    default:
+      throw new Error(`Warning! Filter type ${filterType} is unknown!`);
+  }
+};

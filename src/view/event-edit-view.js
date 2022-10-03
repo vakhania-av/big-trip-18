@@ -1,6 +1,7 @@
+import he from 'he';
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import { isCheckedOffer, humanizeDate, getCheckedDestination } from '../utils.js';
-import { BLANK_POINT, CITIES, TYPES } from '../const.js';
+import { TYPES, FORM_TYPE } from '../const.js';
 import flatpickr from 'flatpickr';
 
 import 'flatpickr/dist/flatpickr.min.css';
@@ -88,7 +89,7 @@ const createDescriptionTemplate = (selectedDestination) => {
   );
 };
 
-const createEventEditTemplate = (point, offers, destinations) => {
+const createEventEditTemplate = (point, offers, destinations, formType) => {
   const { dateFrom, dateTo, basePrice, type } = point;
 
   const dateFromFormatted = humanizeDate(dateFrom);
@@ -124,11 +125,11 @@ const createEventEditTemplate = (point, offers, destinations) => {
             id="event-destination-1" 
             type="text" 
             name="event-destination" 
-            value="${selectedDestination ? selectedDestination.name : ''}" 
+            value="${selectedDestination ? he.encode(selectedDestination.name) : ''}" 
             list="destination-list-1"
           >
           <datalist id="destination-list-1">
-            ${CITIES.map((city) => `option value="${city}"></option`).join('')}
+            ${destinations.map((destination) => `option value="${destination.name}"></option`).join('')}
           </datalist>
         </div>
 
@@ -149,7 +150,7 @@ const createEventEditTemplate = (point, offers, destinations) => {
         </div>
 
         <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-        <button class="event__reset-btn" type="reset">Delete</button>
+        <button class="event__reset-btn" type="reset">${!formType ? 'Delete' : 'Cancel'}</button>
         <button class="event__rollup-btn" type="button">
           <span class="visually-hidden">Open event</span>
         </button>
@@ -167,18 +168,20 @@ export default class EventEditView extends AbstractStatefulView {
   #destinations = null;
   #datepickerFrom = null;
   #datepickerTo = null;
+  #formType = null;
 
-  constructor (point = BLANK_POINT, offers, destinations) {
+  constructor (point, offers, destinations, formType = FORM_TYPE.EDITING) {
     super();
     this.#offers = offers;
     this.#destinations = destinations;
-    this._state = EventEditView.parseStateToPoint(point);
+    this.#formType = formType;
+    this._state = EventEditView.parseStateToPoint(point, this.#formType);
 
     this.#setInnerHandlers();
   }
 
   get template () {
-    return createEventEditTemplate(this._state, this.#offers, this.#destinations);
+    return createEventEditTemplate(this._state, this.#offers, this.#destinations, this.#formType);
   }
 
   // Перегрузим родительский метод, чтобы при удалении убирался ненужный элемент календаря из DOM
@@ -227,6 +230,24 @@ export default class EventEditView extends AbstractStatefulView {
   // Обработчик отправки данных формы
   #formSubmitHandler = (evt) => {
     evt.preventDefault();
+
+    const priceInputValue = this.element.querySelector('.event__input--price').value;
+    const destinationInputValue = this.element.querySelector('.event__input--destination').value;
+
+    const submitBtn = this.element.querySelector('.event__save-btn');
+
+    if (priceInputValue < 1) {
+      submitBtn.disabled = true;
+
+      return;
+    }
+
+    if (!destinationInputValue) {
+      submitBtn.disabled = true;
+
+      return;
+    }
+
     this._callback.formSubmit(EventEditView.parseStateToPoint(this._state));
   };
 
@@ -235,6 +256,8 @@ export default class EventEditView extends AbstractStatefulView {
     this.#setInnerHandlers();
     this.setFormSubmitHandler(this._callback.formSubmit);
     this.setItemClickHandler(this._callback.click);
+    this.setDeleteClickHandler(this._callback.deleteClick);
+    this.setCancelClickHandler(this._callback.cancelClick);
   };
 
   // Устанавливает внутренние обработчики
@@ -242,6 +265,7 @@ export default class EventEditView extends AbstractStatefulView {
     this.element.querySelector('.event__type-group').addEventListener('change', this.#pointTypeChangeHandler);
     this.element.querySelector('.event__input--destination').addEventListener('change', this.#destinationChangeHandler);
     this.element.querySelector('.event__available-offers').addEventListener('change', this.#offerChooseHandler);
+    this.element.querySelector('.event__input--price').addEventListener('change', this.#priceChangeHandler);
     this.#setDateFromPicker();
     this.#setDateToPicker();
   };
@@ -258,23 +282,26 @@ export default class EventEditView extends AbstractStatefulView {
     }
   };
 
-  // Обработчик пункта назначения
+  // Обработчик изменения пункта назначения
   #destinationChangeHandler = (evt) => {
     evt.preventDefault();
 
-    if (!evt.target.value) {
-      this.updateElement({
-        destination: ''
-      });
+    const selectedDestination = this.#destinations.find((destination) => evt.target.value === destination.name);
+
+    if (!selectedDestination) {
+      evt.target.value = '';
 
       return;
     }
 
-    const selectedDestination = this.#destinations.find((destination) => evt.target.value === destination.name);
+    this.updateElement({ destination: selectedDestination.id });
+  };
 
-    this.updateElement({
-      destination: selectedDestination.id
-    });
+  // Обработчик изменения стоимости
+  #priceChangeHandler = (evt) => {
+    evt.preventDefault();
+
+    this.updateElement({ basePrice: evt.target.value });
   };
 
   // Обработчик выбора дополнительных опций
@@ -322,7 +349,7 @@ export default class EventEditView extends AbstractStatefulView {
         minDate: this._state.dateTo,
         defaultDate: this._state.dateFrom,
         onChange: this.#dateFromChangeHandler,
-        time24hr: true
+        'time_24hr': true
       }
     );
   };
@@ -336,9 +363,43 @@ export default class EventEditView extends AbstractStatefulView {
         minDate: this._state.dateFrom,
         defaultDate: this._state.dateTo,
         onChange: this.#dateToChangeHandler,
-        time24hr: true
+        'time_24hr': true
       }
     );
+  };
+
+  // Добавляет обработчик события на нажатие кнопки удаления
+  setDeleteClickHandler = (cb) => {
+    this._callback.deleteClick = cb;
+
+    if (this.#formType !== FORM_TYPE.EDITING) {
+      return;
+    }
+
+    this.element.querySelector('.event__reset-btn').addEventListener('click', this.#formDeleteClickHandler);
+  };
+
+  // Добавляет обработчик события на нажатие кнопки отмены
+  setCancelClickHandler = (cb) => {
+    this._callback.cancelClick = cb;
+
+    if (this.#formType !== FORM_TYPE.CREATING) {
+      return;
+    }
+
+    this.element.querySelector('.event__reset-btn').addEventListener('click', this.#formCancelClickHandler);
+  };
+
+  // Обработчик события кнопки удаления
+  #formDeleteClickHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.deleteClick(EventEditView.parseStateToPoint(this._state));
+  };
+
+  // Обработчик события кнопки отмены
+  #formCancelClickHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.cancelClick(EventEditView.parseStateToPoint(this._state));
   };
 
 }

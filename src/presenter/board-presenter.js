@@ -1,12 +1,11 @@
-import { render, RenderPosition } from '../framework/render.js';
+import { render, RenderPosition, remove } from '../framework/render.js';
 
 import EventListView from '../view/event-list-view.js';
 import SortView from '../view/trip-sort-view.js';
 import NoEventView from '../view/no-event-view.js';
-import { EMPTY_POINT_MESSAGE, SortType } from '../const.js';
+import { EMPTY_POINT_MESSAGE, SortType, FILTER_TYPE, UserAction, UPDATE_TYPE } from '../const.js';
 import { sortByDate, sortByPrice, sortByDuration } from '../utils/point.js';
 import PointPresenter from './point-presenter.js';
-import updateItem from '../utils/common.js';
 
 export default class BoardPresenter {
 

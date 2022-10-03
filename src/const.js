@@ -74,7 +74,7 @@ const SortType = {
 
 // Пустая точка маршрута
 const BLANK_POINT = {
-  id: nanoid(),
+  //id: nanoid(),
   basePrice: 0,
   dateTo: dayjs().toDate(),
   dateFrom: dayjs().toDate(),
@@ -111,6 +111,8 @@ const UserAction = {
   UPDATE_POINT: 'UPDATE_POINT'
 };
 
+const MAX_DESTINATIONS_DISPLAYED = 3;
+
 export {
   CITIES,
   TYPES,
@@ -123,6 +125,7 @@ export {
   FILTER_TYPE,
   UPDATE_TYPE,
   FORM_TYPE,
-  UserAction
+  UserAction,
+  MAX_DESTINATIONS_DISPLAYED
 };
 

@@ -1,7 +1,7 @@
 import AbstractView from '../framework/view/abstract-view.js';
 import { SortType } from '../const.js';
 
-const createSortTemplate = () => (
+const createSortTemplate = (currentSortType) => (
   `<form class="trip-events__trip-sort  trip-sort" action="#" method="get">
     <div class="trip-sort__item  trip-sort__item--day">
       <input 
@@ -10,6 +10,7 @@ const createSortTemplate = () => (
         type="radio" 
         name="trip-sort" 
         value="sort-day"
+        ${currentSortType === SortType.DEFAULT ? 'checked' : ''}
         data-sort-type="${SortType.DEFAULT}"
       >
       <label class="trip-sort__btn" for="sort-day">Day</label>
@@ -21,6 +22,7 @@ const createSortTemplate = () => (
         class="trip-sort__input  visually-hidden" 
         type="radio" 
         name="trip-sort" 
+
         value="sort-event" disabled
       >
       <label class="trip-sort__btn" for="sort-event">Event</label>
@@ -33,6 +35,7 @@ const createSortTemplate = () => (
         type="radio" 
         name="trip-sort" 
         value="sort-time"
+        ${currentSortType === SortType.DURATION ? 'checked' : ''}
         data-sort-type="${SortType.DURATION}"
       >
       <label class="trip-sort__btn" for="sort-time">Time</label>
@@ -45,6 +48,7 @@ const createSortTemplate = () => (
         type="radio" 
         name="trip-sort" 
         value="sort-price" checked
+        ${currentSortType === SortType.PRICE ? 'checked' : ''}
         data-sort-type="${SortType.PRICE}"
       >
       <label class="trip-sort__btn" for="sort-price">Price</label>
@@ -64,9 +68,15 @@ const createSortTemplate = () => (
 );
 
 export default class SortView extends AbstractView {
+  #currentSortType = null;
+
+  constructor (currentSortType) {
+    super();
+    this.#currentSortType = currentSortType;
+  }
 
   get template () {
-    return createSortTemplate();
+    return createSortTemplate(this.#currentSortType);
   }
 
   setSortTypeChangeHandler = (cb) => {
