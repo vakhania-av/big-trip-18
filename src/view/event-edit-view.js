@@ -1,6 +1,9 @@
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import { isCheckedOffer, humanizeDate, getCheckedDestination } from '../utils.js';
 import { BLANK_POINT, CITIES, TYPES } from '../const.js';
+import flatpickr from 'flatpickr';
+
+import 'flatpickr/dist/flatpickr.min.css';
 
 const createAvailableOffersTemplate = (point, availableOffers) => (
   availableOffers.offers.map((offer) => (
