@@ -129,14 +129,15 @@ const createEventEditTemplate = (point, offers, destinations, formType) => {
         </div>
 
         <div class="event__field-group  event__field-group--destination">
-          <label class="event__label  event__type-output" for="event-destination-${point.id}">
+          <label class="event__label  event__type-output" for="event-destination-1">
             ${typeFormatted}
           </label>
           <input 
             class="event__input  event__input--destination" 
-            id="event-destination-${point.id}" 
+            id="event-destination-1" 
             type="text" 
             name="event-destination" 
+            required
             value="${selectedDestination ? he.encode(selectedDestination.name) : ''}" 
             list="destination-list-1" 
             ${isDisabled ? 'disabled' : ''}
@@ -178,7 +179,9 @@ const createEventEditTemplate = (point, offers, destinations, formType) => {
             id="event-price-1" 
             type="number" 
             name="event-price" 
+            required
             value="${Math.abs(Number(basePrice))}"
+            min="1"
             onkeydown="return event.keyCode !== 69 && event.keyCode !== 189" onFocus="this.select()"
             ${isDisabled ? 'disabled' : ''}
           >
@@ -277,22 +280,6 @@ export default class EventEditView extends AbstractStatefulView {
   // Обработчик отправки данных формы
   #formSubmitHandler = (evt) => {
     evt.preventDefault();
-
-    const priceInput = this.element.querySelector('.event__input--price');
-    const destinationInput = this.element.querySelector('.event__input--destination');
-
-    const submitBtn = this.element.querySelector('.event__save-btn');
-
-    if (priceInput.value < 1) {
-      return;
-    }
-
-    if (destinationInput.value === '') {
-      submitBtn.disabled = true;
-
-      return;
-    }
-
     this._callback.formSubmit(EventEditView.parseStateToPoint(this._state));
   };
 
@@ -346,7 +333,9 @@ export default class EventEditView extends AbstractStatefulView {
   #priceChangeHandler = (evt) => {
     evt.preventDefault();
 
-    this.updateElement({ basePrice: evt.target.value });
+    if (evt.target.value) {
+      this.updateElement({ basePrice: evt.target.value });
+    }
   };
 
   // Обработчик выбора дополнительных опций
