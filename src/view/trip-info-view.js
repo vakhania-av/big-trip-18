@@ -7,11 +7,12 @@ const getDestinations = (points, destinations) => {
     return 'Make your own route';
   }
 
-  let selectedDestinations = destinations.filter((destination) => points.find((point) => point.destination === destination.id));
-  selectedDestinations = selectedDestinations.map((destination) => destination.name);
+  const selectedDestinations = destinations.filter((destination) => points.find((point) => point.destination === destination.id)).map((city) => city.name);
 
   if (selectedDestinations.length > MAX_DESTINATIONS_DISPLAYED) {
-    return [selectedDestinations[0], selectedDestinations.at(-1)].join(' &mdash; ... &mdash; ');
+    const firstDestination = destinations.find((destination) => points[0].destination === destination.id).name;
+    const lastDestination = destinations.find((destination) => points.at(-1).destination === destination.id).name;
+    return [firstDestination, lastDestination].join(' &mdash; ... &mdash; ');
   }
 
   return selectedDestinations.join(' &mdash; ');
