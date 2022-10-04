@@ -329,7 +329,6 @@ export default class EventEditView extends AbstractStatefulView {
 
   // Обработчик изменения пункта назначения
   #destinationChangeHandler = (evt) => {
-    debugger
     evt.preventDefault();
 
     const selectedDestination = this.#destinations.find((destination) => evt.target.value === destination.name);
