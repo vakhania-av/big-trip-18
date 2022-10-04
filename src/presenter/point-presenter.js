@@ -1,6 +1,9 @@
 import EventEditView from '../view/event-edit-view.js';
 import EventItemView from '../view/event-item-view.js';
 import { render, replace, remove } from '../framework/render.js';
+import { UPDATE_TYPE, UserAction } from '../const.js';
+import { isEqualDates } from '../utils/point.js';
+import { isEscKey } from '../utils.js';
 
 const Mode = {
   DEFAULT: 'DEFAULT',
@@ -18,19 +21,17 @@ export default class PointPresenter {
   #changeMode = null;
 
   #point = null;
-  #offers = [];
   #destinations = [];
   #mode = Mode.DEFAULT;
 
-  constructor (pointListContainer, changeData, changeMode) {
-    this.#container = pointListContainer;
+  constructor (container, changeData, changeMode) {
+    this.#container = container;
     this.#changeData = changeData;
     this.#changeMode = changeMode;
   }
 
   init = (point, offers, destinations) => {
     this.#point = point;
-    this.#offers = offers;
     this.#destinations = destinations;
 
     const prevPointComponent = this.#pointComponent;
@@ -43,6 +44,7 @@ export default class PointPresenter {
     this.#pointComponent.setFavoriteClickHandler(this.#handleFavoriteClick);
     this.#pointEditComponent.setFormSubmitHandler(this.#handleFormSubmit);
     this.#pointEditComponent.setItemClickHandler(this.#handleCloseEditForm);
+    this.#pointEditComponent.setDeleteClickHandler(this.#handleDeleteClick);
 
     if (!prevPointComponent || !prevPointEditComponent) {
       render(this.#pointComponent, this.#container);
@@ -63,7 +65,7 @@ export default class PointPresenter {
   };
 
   #escKeyDownHandler = (evt) => {
-    if (evt.key.includes('Esc', 'Escape')) {
+    if (isEscKey(evt)) {
       evt.preventDefault();
       this.#pointEditComponent.reset(this.#point, this.#destinations);
       this.#replaceFormToPoint();
@@ -92,13 +94,25 @@ export default class PointPresenter {
     this.#replaceFormToPoint();
   };
 
-  #handleFormSubmit = (point) => {
-    this.#changeData(point, this.#offers, this.#destinations);
+  #handleFormSubmit = (update) => {
+    const isMinorUpdate =
+      !isEqualDates(this.#point.dateFrom, update.dateFrom) ||
+      !isEqualDates(this.#point.dateTo, update.dateTo) ||
+      this.#point.type !== update.type ||
+      this.#point.basePrice !== update.basePrice;
+
+    const condition = isMinorUpdate ? UPDATE_TYPE.MINOR : UPDATE_TYPE.PATCH;
+
+    this.#changeData(UserAction.UPDATE_POINT, condition, update);
     this.#replaceFormToPoint();
   };
 
   #handleFavoriteClick = () => {
-    this.#changeData({...this.#point, isFavorite: !this.#point.isFavorite}, this.#offers, this.#destinations);
+    this.#changeData(UserAction.UPDATE_POINT, UPDATE_TYPE.PATCH, {...this.#point, isFavorite: !this.#point.isFavorite});
+  };
+
+  #handleDeleteClick = (point) => {
+    this.#changeData(UserAction.DELETE_POINT, UPDATE_TYPE.MINOR, point);
   };
 
   resetView = () => {

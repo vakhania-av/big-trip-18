@@ -61,6 +61,9 @@ const getCheckedOffers = (point, offers) => {
 // Функция сопоставления выбранного пункта назначения
 const getCheckedDestination = (point, destinations) => destinations.find((destination) => point.destination === destination.id);
 
+// Функция проверки клавиши Escape
+const isEscKey = (evt) => (evt.key.includes('Escape', 'Esc'));
+
 export {
   getRandomInt,
   getRandomArrayElement,
@@ -71,6 +74,7 @@ export {
   calculateDurationInPoint,
   isCheckedOffer,
   getCheckedOffers,
-  getCheckedDestination
+  getCheckedDestination,
+  isEscKey
 };
 

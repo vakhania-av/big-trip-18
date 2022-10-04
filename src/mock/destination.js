@@ -59,5 +59,32 @@ export const generateDestinations = () => ([
         description: 'Toompea Castle'
       }
     ]
+  },
+  {
+    id: 4,
+    description: 'Warsaw is the epitome of a dynamic European metropolis, its trademarks – besides a rich history – being its open-minded residents, the River Vistula and exceptional cuisine. The Polish capital is a city that is constantly changing, to be discovered anew with every successive visit. And, trust us, you will come back…',
+    name: 'Warsaw',
+    pictures: [
+      {
+        src: `http://picsum.photos/248/152?r=${getRandomInt(1, 100)}`,
+        description: 'Wilanow Palace'
+      },
+      {
+        src: `http://picsum.photos/248/152?r=${getRandomInt(1, 100)}`,
+        description: 'Copernicus Science Centre'
+      },
+      {
+        src: `http://picsum.photos/248/152?r=${getRandomInt(1, 100)}`,
+        description: 'Nowy Swiat Street'
+      },
+      {
+        src: `http://picsum.photos/248/152?r=${getRandomInt(1, 100)}`,
+        description: 'Old Town Square'
+      },
+      {
+        src: `http://picsum.photos/248/152?r=${getRandomInt(1, 100)}`,
+        description: 'University of Warsaw Library'
+      }
+    ]
   }
 ]);

@@ -1,10 +1,11 @@
 // Модель для сущности "Точка маршрута"
 
+import Observable from '../framework/observable.js';
 import { generatePoint } from '../mock/point.js';
 import { generateOffers } from '../mock/offer.js';
 import { generateDestinations } from '../mock/destination.js';
 
-export default class PointModel {
+export default class PointModel extends Observable {
   #points = Array.from({length: 10}, generatePoint);
   #offers = generateOffers();
   #destinations = generateDestinations();
@@ -20,4 +21,37 @@ export default class PointModel {
   get destinations () {
     return this.#destinations;
   }
+
+  // Добавление точки маршрута
+  addPoint = (updateType, update) => {
+    this.#points = [update, ...this.#points];
+
+    this._notify(updateType, update);
+  };
+
+  // Удаление точки маршрута
+  deletePoint = (updateType, update) => {
+    const index = this.#points.findIndex((point) => point.id === update.id);
+
+    if (index === -1) {
+      throw new Error(`Warning! Unexisting point ${update} can't be deleted!`);
+    }
+
+    this.#points = [...this.#points.slice(0, index), ...this.#points.slice(index + 1)];
+
+    this._notify(updateType);
+  };
+
+  // Обновление точки маршрута
+  updatePoint = (updateType, update) => {
+    const index = this.#points.findIndex((point) => point.id === update.id);
+
+    if (index === -1) {
+      throw new Error(`Warning! Unexisting point ${update} can't be updated!`);
+    }
+
+    this.#points = [...this.#points.slice(0, index), update, ...this.#points.slice(index + 1)];
+
+    this._notify(updateType, update);
+  };
 }

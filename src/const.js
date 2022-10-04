@@ -1,6 +1,4 @@
-import { nanoid } from 'nanoid';
 import dayjs from 'dayjs';
-import { getRandomInt } from './utils.js';
 
 /** Описание констант **/
 
@@ -74,15 +72,43 @@ const SortType = {
 
 // Пустая точка маршрута
 const BLANK_POINT = {
-  id: nanoid(),
   basePrice: 0,
   dateTo: dayjs().toDate(),
   dateFrom: dayjs().toDate(),
-  destination: getRandomInt(1, 5),
+  destination: 0,
   isFavorite: false,
   offers: [],
-  type: ''
+  type: TYPES[0]
 };
+
+// Объект с константами для типов фильтра
+const FILTER_TYPE = {
+  EVERYTHING: 'EVERYTHING',
+  PAST: 'PAST',
+  FUTURE: 'FUTURE'
+};
+
+// Объект с видами обновлений
+const UPDATE_TYPE = {
+  PATCH: 'PATCH',
+  MINOR: 'MINOR',
+  MAJOR: 'MAJOR'
+};
+
+// Объект с типами режима формы
+const FORM_TYPE = {
+  CREATING: 'CREATING',
+  EDITING: 'EDITING'
+};
+
+// Объект с видами действий пользователя
+const UserAction = {
+  ADD_POINT: 'ADD_POINT',
+  DELETE_POINT: 'DELETE_POINT',
+  UPDATE_POINT: 'UPDATE_POINT'
+};
+
+const MAX_DESTINATIONS_DISPLAYED = 3;
 
 export {
   CITIES,
@@ -92,6 +118,11 @@ export {
   PHOTOS_COUNT,
   EMPTY_POINT_MESSAGE,
   SortType,
-  BLANK_POINT
+  BLANK_POINT,
+  FILTER_TYPE,
+  UPDATE_TYPE,
+  FORM_TYPE,
+  UserAction,
+  MAX_DESTINATIONS_DISPLAYED
 };
 

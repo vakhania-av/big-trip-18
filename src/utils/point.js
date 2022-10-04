@@ -14,9 +14,13 @@ const sortByPrice = (pointA, pointB) => pointB.basePrice - pointA.basePrice;
 // Сортировка по дате
 const sortByDate = (pointA, pointB) => dayjs(pointA.dateFrom).diff(dayjs(pointB.dateFrom));
 
+// Проверка на совпадающие даты начала и окончания путешествия
+const isEqualDates = (dateA, dateB) => dayjs(dateA).isSame(dateB);
+
 export {
   sortByDuration,
   sortByPrice,
-  sortByDate
+  sortByDate,
+  isEqualDates
 };
 
