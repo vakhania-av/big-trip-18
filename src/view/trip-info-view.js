@@ -34,12 +34,12 @@ const getTripDates = (points) => {
   }
 
   const dateFrom = dayjs(points[0].dateFrom).format('D MMM');
-  const dateTo = dayjs(points.at(-1).dateTo).format('D MMM');
+  const dateTo = dayjs(points[points.length - 1].dateTo).format('D MMM');
 
   return [dateFrom, dateTo].join(' - ');
 };
 
-const createInfoTemplate = () => (
+const createInfoTemplate = (points, destinations) => (
   `<section class="trip-main__trip-info  trip-info">
     <div class="trip-info__main">
       <h1 class="trip-info__title">${getDestinations(points, destinations)}</h1>

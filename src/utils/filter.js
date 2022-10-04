@@ -8,7 +8,7 @@ dayjs.extend(isSameOrBefore);
 
 export const filterPoints = (filterType, points) => {
   const pastPoints = points.filter((point) => dayjs().isAfter(dayjs(point.dateFrom), 'D'));
-  const futurePoints = points.filter((point) => dayjs().isSameOrBefore(dayjs(point.dateTo), 'D'));
+  const futurePoints = points.filter((point) => dayjs().isSameOrBefore(dayjs(point.dateFrom), 'D'));
 
   switch (filterType) {
     case FILTER_TYPE.EVERYTHING:

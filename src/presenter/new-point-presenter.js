@@ -1,4 +1,4 @@
-import { render, remove, renderPosition } from '../framework/render';
+import { render, remove, RenderPosition } from '../framework/render';
 import EventEditView from '../view/event-edit-view.js';
 import { nanoid } from 'nanoid';
 import { UserAction, UPDATE_TYPE, FORM_TYPE, BLANK_POINT } from '../const.js';
@@ -39,7 +39,7 @@ export default class NewPointPresenter {
     this.#editFormComponent.setItemClickHandler(this.#handleCloseEditForm);
     this.#editFormComponent.setCancelClickHandler(this.#handleCancelClick);
 
-    render(this.#editFormComponent, this.#pointListContainer, renderPosition.AFTERBEGIN);
+    render(this.#editFormComponent, this.#pointListContainer, RenderPosition.AFTERBEGIN);
     document.addEventListener('keydown', this.#escKeyDownClickHandler);
 
   };
@@ -53,6 +53,7 @@ export default class NewPointPresenter {
 
     remove(this.#editFormComponent);
     this.#editFormComponent = null;
+
     document.removeEventListener('keydown', this.#escKeyDownClickHandler);
   };
 

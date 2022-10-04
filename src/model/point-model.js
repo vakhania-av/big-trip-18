@@ -33,24 +33,24 @@ export default class PointModel extends Observable {
   deletePoint = (updateType, update) => {
     const index = this.#points.findIndex((point) => point.id === update.id);
 
-    if (!index) {
+    if (index === -1) {
       throw new Error(`Warning! Unexisting point ${update} can't be deleted!`);
     }
 
     this.#points = [...this.#points.slice(0, index), ...this.#points.slice(index + 1)];
 
-    this._notify(updateType, update);
+    this._notify(updateType);
   };
 
   // Обновление точки маршрута
   updatePoint = (updateType, update) => {
     const index = this.#points.findIndex((point) => point.id === update.id);
 
-    if (!index) {
+    if (index === -1) {
       throw new Error(`Warning! Unexisting point ${update} can't be updated!`);
     }
 
-    this.#points = [...this.#points.slice(0, index), ...this.#points.slice(index + 1)];
+    this.#points = [...this.#points.slice(0, index), update, ...this.#points.slice(index + 1)];
 
     this._notify(updateType, update);
   };

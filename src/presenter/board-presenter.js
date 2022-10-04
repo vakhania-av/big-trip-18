@@ -70,7 +70,7 @@ export default class BoardPresenter {
   // Отрисовка доски (контейнера)
   #renderBoard = () => {
     const points = this.points;
-    this.#emptyPointMessage = EMPTY_POINT_MESSAGE.EVERYTHING;
+    this.#emptyPointMessage = EMPTY_POINT_MESSAGE[this.#filterModel.filter];
 
     if (!points.length) {
       this.#renderNoPoints(this.#emptyPointMessage);
@@ -146,10 +146,10 @@ export default class BoardPresenter {
   #handleViewAction = (actionType, updateType, update) => {
     switch (actionType) {
       case UserAction.ADD_POINT:
-        this.#pointModel.updatePoint(updateType, update);
+        this.#pointModel.addPoint(updateType, update);
         break;
       case UserAction.DELETE_POINT:
-        this.#pointModel.addPoint(updateType, update);
+        this.#pointModel.deletePoint(updateType, update);
         break;
       case UserAction.UPDATE_POINT:
         this.#pointModel.updatePoint(updateType, update);

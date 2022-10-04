@@ -1,6 +1,4 @@
-import { nanoid } from 'nanoid';
 import dayjs from 'dayjs';
-import { getRandomInt } from './utils.js';
 
 /** Описание констант **/
 
@@ -74,11 +72,10 @@ const SortType = {
 
 // Пустая точка маршрута
 const BLANK_POINT = {
-  //id: nanoid(),
   basePrice: 0,
   dateTo: dayjs().toDate(),
   dateFrom: dayjs().toDate(),
-  destination: getRandomInt(1, 5),
+  destination: 0,
   isFavorite: false,
   offers: [],
   type: TYPES[0]
