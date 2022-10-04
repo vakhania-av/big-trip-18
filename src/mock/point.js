@@ -25,7 +25,7 @@ export const generatePoint = () => {
     basePrice: getRandomInt(10, 800),
     dateFrom,
     dateTo,
-    destination: 2,
+    destination: getRandomInt(1, 4),
     id: nanoid(),
     isFavorite: Boolean(getRandomInt(0, 1)),
     offers: [1, 3],
