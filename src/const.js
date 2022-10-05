@@ -92,7 +92,9 @@ const FILTER_TYPE = {
 const UPDATE_TYPE = {
   PATCH: 'PATCH',
   MINOR: 'MINOR',
-  MAJOR: 'MAJOR'
+  MAJOR: 'MAJOR',
+  INIT: 'INIT',
+  INIT_ERROR: 'INIT_ERROR'
 };
 
 // Объект с типами режима формы
@@ -108,7 +110,35 @@ const UserAction = {
   UPDATE_POINT: 'UPDATE_POINT'
 };
 
+// Константа с максимальным количество отображаемых точек маршрута в информацинной строке
 const MAX_DESTINATIONS_DISPLAYED = 3;
+
+// Данные для подключения к серверу
+const API_DATA = {
+  END_POINT: 'https://18.ecmascript.pages.academy/big-trip',
+  AUTHORIZATION: 'Basic gt890brjv7mbfk'
+};
+
+// Перечисление с методами HTTP-запросов
+const METHOD = {
+  GET: 'GET',
+  POST: 'POST',
+  PUT: 'PUT',
+  PATCH: 'PATCH',
+  DELETE: 'DELETE'
+};
+
+// Перечисление с возможными режимами точки маршрута
+const POINT_MODE = {
+  DEFAULT: 'DEFAULT',
+  EDITING: 'EDITING'
+};
+
+// Перечисление с границами времени задержки
+const TIME_LIMIT = {
+  LOWER_LIMIT: 350,
+  UPPER_LIMIT: 1000
+};
 
 export {
   CITIES,
@@ -123,6 +153,10 @@ export {
   UPDATE_TYPE,
   FORM_TYPE,
   UserAction,
-  MAX_DESTINATIONS_DISPLAYED
+  MAX_DESTINATIONS_DISPLAYED,
+  API_DATA,
+  METHOD,
+  POINT_MODE,
+  TIME_LIMIT
 };
 

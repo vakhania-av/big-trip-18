@@ -7,11 +7,14 @@ import FilterPresenter from './presenter/filter-presenter.js';
 import PointModel from './model/point-model.js';
 import FilterModel from './model/filter-model.js';
 
+import PointApiService from './points-api-service.js';
+import { API_DATA } from './const.js';
+
 import NewPointBtnView from './view/new-point-btn-view.js';
 
 const newPointBtnComponent = new NewPointBtnView();
 
-const pointModel = new PointModel();
+const pointModel = new PointModel(new PointApiService(API_DATA.END_POINT, API_DATA.AUTHORIZATION));
 const filterModel = new FilterModel();
 
 const tripMainElement = document.querySelector('.trip-main');
@@ -31,11 +34,12 @@ const handleNewPointBtnClick = () => {
   newPointBtnComponent.element.disabled = true;
 };
 
-render(newPointBtnComponent, tripMainElement);
-newPointBtnComponent.setClickHandler(handleNewPointBtnClick);
-
 infoPresenter.init();
 filterPresenter.init();
 boardPresenter.init();
+pointModel.init().finally(() => {
+  render(newPointBtnComponent, tripMainElement);
+  newPointBtnComponent.setClickHandler(handleNewPointBtnClick);
+});
 
 

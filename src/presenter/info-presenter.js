@@ -38,7 +38,11 @@ export default class InfoPresenter {
 
   #handleModelEvent = () => {
     remove(this.#tripInfoComponent);
+
     this.#points = this.#pointsModel.points;
+    this.#destinations = this.#pointsModel.destinations;
+    this.#offers = this.#pointsModel.offers;
+
     this.init();
   };
 }

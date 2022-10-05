@@ -1,8 +1,9 @@
 import { render, remove, RenderPosition } from '../framework/render';
 import EventEditView from '../view/event-edit-view.js';
-import { nanoid } from 'nanoid';
 import { UserAction, UPDATE_TYPE, FORM_TYPE, BLANK_POINT } from '../const.js';
 import { isEscKey } from '../utils.js';
+
+const { AFTERBEGIN } = RenderPosition;
 
 export default class NewPointPresenter {
   #pointListContainer = null;
@@ -11,20 +12,22 @@ export default class NewPointPresenter {
   #changeData = null;
   #destroyCallback = null;
 
-  #offers = [];
-  #destinations = [];
-
   constructor (pointListContainer, changeData, pointModel) {
     this.#pointListContainer = pointListContainer;
     this.#changeData = changeData;
     this.#pointsModel = pointModel;
-
-    this.#offers = this.#pointsModel.offers;
-    this.#destinations = this.#pointsModel.destinations;
   }
 
   get blankPoint () {
     return { ...BLANK_POINT };
+  }
+
+  get offers () {
+    return this.#pointsModel.offers;
+  }
+
+  get destinations () {
+    return this.#pointsModel.destinations;
   }
 
   init = (cb) => {
@@ -34,12 +37,12 @@ export default class NewPointPresenter {
       return;
     }
 
-    this.#editFormComponent = new EventEditView(this.blankPoint, this.#offers, this.#destinations, FORM_TYPE.CREATING);
+    this.#editFormComponent = new EventEditView(this.blankPoint, this.offers, this.destinations, FORM_TYPE.CREATING);
     this.#editFormComponent.setFormSubmitHandler(this.#handleFormSubmit);
     this.#editFormComponent.setItemClickHandler(this.#handleCloseEditForm);
     this.#editFormComponent.setCancelClickHandler(this.#handleCancelClick);
 
-    render(this.#editFormComponent, this.#pointListContainer, RenderPosition.AFTERBEGIN);
+    render(this.#editFormComponent, this.#pointListContainer, AFTERBEGIN);
     document.addEventListener('keydown', this.#escKeyDownClickHandler);
 
   };
@@ -58,8 +61,7 @@ export default class NewPointPresenter {
   };
 
   #handleFormSubmit = (point) => {
-    this.#changeData(UserAction.ADD_POINT, UPDATE_TYPE.MINOR, {id: nanoid(), ...point});
-    this.destroy();
+    this.#changeData(UserAction.ADD_POINT, UPDATE_TYPE.MINOR, point);
   };
 
   #handleCloseEditForm = () => {
@@ -75,5 +77,24 @@ export default class NewPointPresenter {
       evt.preventDefault();
       this.destroy();
     }
+  };
+
+  setSaving = () => {
+    this.#editFormComponent.updateElement({
+      isDisabled: true,
+      isSaving: true
+    });
+  };
+
+  setAborting = () => {
+    const resetFormState = () => {
+      this.#editFormComponent.updateElement({
+        isDisabled: false,
+        isSaving: false,
+        isDeleting: false
+      });
+    };
+
+    this.#editFormComponent.shake(resetFormState);
   };
 }
