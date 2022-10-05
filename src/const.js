@@ -116,7 +116,7 @@ const MAX_DESTINATIONS_DISPLAYED = 3;
 // Данные для подключения к серверу
 const API_DATA = {
   END_POINT: 'https://18.ecmascript.pages.academy/big-trip',
-  AUTHORIZATION: 'Basic gt890brjv7mbfp'
+  AUTHORIZATION: 'Basic gt890brjv7mbfk'
 };
 
 // Перечисление с методами HTTP-запросов
