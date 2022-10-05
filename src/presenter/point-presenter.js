@@ -90,7 +90,7 @@ export default class PointPresenter {
   };
 
   #handleFormSubmit = (update) => {
-    this.#changeData(UserAction.UPDATE_POINT, UPDATE_TYPE.MAJOR, update);
+    this.#changeData(UserAction.UPDATE_POINT, UPDATE_TYPE.MINOR, update);
     document.removeEventListener('keydown', this.#escKeyDownHandler);
   };
 
@@ -118,7 +118,7 @@ export default class PointPresenter {
     if (this.#mode === POINT_MODE.EDITING) {
       this.#pointEditComponent.updateElement({
         isDisabled: true,
-        isDeleting: true
+        isSaving: true
       });
     }
   };

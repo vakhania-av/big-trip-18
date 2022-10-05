@@ -203,10 +203,9 @@ export default class BoardPresenter {
         break;
       case UserAction.UPDATE_POINT:
         this.#pointPresenter.get(update.id).setSaving();
-
         try {
           await this.#pointModel.updatePoint(updateType, update);
-        } catch (err) {
+        } catch(err) {
           this.#pointPresenter.get(update.id).setAborting();
         }
 
