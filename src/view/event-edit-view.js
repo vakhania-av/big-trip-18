@@ -182,7 +182,7 @@ const createEventEditTemplate = (point, offers, destinations, formType) => {
             required
             value="${Math.abs(Number(basePrice))}"
             min="1"
-            onkeydown="return event.keyCode !== 69 && event.keyCode !== 189" onFocus="this.select()"
+            max="10000"
             ${isDisabled ? 'disabled' : ''}
           >
         </div>
