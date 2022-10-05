@@ -3,9 +3,12 @@ import { render, RenderPosition, remove } from '../framework/render.js';
 import EventListView from '../view/event-list-view.js';
 import SortView from '../view/trip-sort-view.js';
 import NoEventView from '../view/no-event-view.js';
+import LoadingView from '../view/loading-view.js';
+
 import { EMPTY_POINT_MESSAGE, SortType, FILTER_TYPE, UserAction, UPDATE_TYPE } from '../const.js';
 import { sortByDate, sortByPrice, sortByDuration } from '../utils/point.js';
 import { filterPoints } from '../utils/filter.js';
+
 import PointPresenter from './point-presenter.js';
 import NewPointPresenter from './new-point-presenter.js';
 
@@ -18,6 +21,7 @@ export default class BoardPresenter {
   #emptyPointMessage = null;
 
   #listComponent = new EventListView();
+  #loadingComponent = new LoadingView();
   #sortComponent = null;
   #noPointComponent = null;
 
@@ -25,6 +29,7 @@ export default class BoardPresenter {
   #newPointPresenter = null;
 
   #currentSortType = SortType.DEFAULT;
+  #isLoading = true;
 
   constructor (container, pointModel, filterModel) {
     this.#container = container;
@@ -69,6 +74,11 @@ export default class BoardPresenter {
 
   // Отрисовка доски (контейнера)
   #renderBoard = () => {
+    if (this.#isLoading) {
+      this.#renderLoading();
+      return;
+    }
+
     const points = this.points;
     this.#emptyPointMessage = EMPTY_POINT_MESSAGE[this.#filterModel.filter];
 
@@ -138,6 +148,11 @@ export default class BoardPresenter {
         this.#clearBoard({ resetSortType: true });
         this.#renderBoard();
         break;
+      case UPDATE_TYPE.INIT:
+        this.#isLoading = false;
+        remove(this.#loadingComponent);
+        this.#renderBoard();
+        break;
       default:
         throw new Error(`Warning! Update type ${updateType} is unkmown!`);
     }
@@ -169,9 +184,15 @@ export default class BoardPresenter {
     }
 
     remove(this.#sortComponent);
+    remove(this.#loadingComponent);
 
     if (resetSortType) {
       this.#currentSortType = SortType.DEFAULT;
     }
+  };
+
+  // Метод, отвечающий за preloader во время загрузки данных
+  #renderLoading = () => {
+    render(this.#loadingComponent, this.#container);
   };
 }
