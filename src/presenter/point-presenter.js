@@ -116,8 +116,8 @@ export default class PointPresenter {
   };
 
   destroy = () => {
-    remove(this.#pointComponent);
     remove(this.#pointEditComponent);
+    remove(this.#pointComponent);
   };
 
   setSaving = () => {

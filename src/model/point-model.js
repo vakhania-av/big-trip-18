@@ -28,10 +28,10 @@ export default class PointModel extends Observable {
   }
 
   // Метод инициализации
-  init = async () => {
-    const fetchedPoints = await this.#pointApiService.points;
-    const fetchedOffers = await this.#pointApiService.offers;
-    const fetchedDestinations = await this.#pointApiService.destinations;
+  init = () => {
+    const fetchedPoints = this.#pointApiService.points;
+    const fetchedOffers = this.#pointApiService.offers;
+    const fetchedDestinations = this.#pointApiService.destinations;
 
     return Promise.all([fetchedPoints, fetchedOffers, fetchedDestinations])
       .then(([points, offers, destinations]) => {
