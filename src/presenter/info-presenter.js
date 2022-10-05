@@ -42,6 +42,7 @@ export default class InfoPresenter {
     this.#points = this.#pointsModel.points;
     this.#destinations = this.#pointsModel.destinations;
     this.#offers = this.#pointsModel.offers;
+
     this.init();
   };
 }

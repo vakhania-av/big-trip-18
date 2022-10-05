@@ -93,7 +93,8 @@ const UPDATE_TYPE = {
   PATCH: 'PATCH',
   MINOR: 'MINOR',
   MAJOR: 'MAJOR',
-  INIT: 'INIT'
+  INIT: 'INIT',
+  INIT_ERROR: 'INIT_ERROR'
 };
 
 // Объект с типами режима формы
@@ -118,6 +119,27 @@ const API_DATA = {
   AUTHORIZATION: 'Basic gt890brjv7mbfp'
 };
 
+// Перечисление с методами HTTP-запросов
+const METHOD = {
+  GET: 'GET',
+  POST: 'POST',
+  PUT: 'PUT',
+  PATCH: 'PATCH',
+  DELETE: 'DELETE'
+};
+
+// Перечисление с возможными режимами точки маршрута
+const POINT_MODE = {
+  DEFAULT: 'DEFAULT',
+  EDITING: 'EDITING'
+};
+
+// Перечисление с границами времени задержки
+const TIME_LIMIT = {
+  LOWER_LIMIT: 350,
+  UPPER_LIMIT: 1000
+};
+
 export {
   CITIES,
   TYPES,
@@ -132,6 +154,9 @@ export {
   FORM_TYPE,
   UserAction,
   MAX_DESTINATIONS_DISPLAYED,
-  API_DATA
+  API_DATA,
+  METHOD,
+  POINT_MODE,
+  TIME_LIMIT
 };
 

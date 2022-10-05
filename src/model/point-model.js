@@ -29,22 +29,25 @@ export default class PointModel extends Observable {
 
   // Метод инициализации
   init = async () => {
-    try {
-      const points = await this.#pointApiService.points;
-      const offers = await this.#pointApiService.offers;
-      const destinations = await this.#pointApiService.destinations;
+    const fetchedPoints = await this.#pointApiService.points;
+    const fetchedOffers = await this.#pointApiService.offers;
+    const fetchedDestinations = await this.#pointApiService.destinations;
 
-      this.#points = points.map(this.#adaptToClient);
-      this.#offers = offers;
-      this.#destinations = destinations;
+    return Promise.all([fetchedPoints, fetchedOffers, fetchedDestinations])
+      .then(([points, offers, destinations]) => {
+        this.#points = points.map(this.#adaptToClient);
+        this.#offers = offers;
+        this.#destinations = destinations;
 
-    } catch (err) {
-      this.#points = [];
-      this.#offers = [];
-      this.#destinations = [];
-    }
+        this._notify(UPDATE_TYPE.INIT);
+      })
+      .catch (() => {
+        this.#points = [];
+        this.#offers = [];
+        this.#destinations = [];
 
-    this._notify(UPDATE_TYPE.INIT);
+        this._notify(UPDATE_TYPE.INIT_ERROR);
+      });
   };
 
   // Метод-адаптер для преобразования данных в сторону клиента
@@ -65,21 +68,33 @@ export default class PointModel extends Observable {
   };
 
   // Добавление точки маршрута
-  addPoint = (updateType, update) => {
-    this.#points = [update, ...this.#points];
+  addPoint = async (updateType, update) => {
+    try {
+      const response = await this.#pointApiService.addPoint(update);
+      const newPoint = this.#adaptToClient(response);
 
-    this._notify(updateType, update);
+      this.#points = [newPoint, ...this.#points];
+      this._notify(updateType, update);
+    } catch (err) {
+      throw new Error(`Can't add point ${update}`);
+    }
   };
 
   // Удаление точки маршрута
-  deletePoint = (updateType, update) => {
+  deletePoint = async (updateType, update) => {
     const index = this.#points.findIndex((point) => point.id === update.id);
 
     if (index === -1) {
       throw new Error(`Warning! Unexisting point ${update} can't be deleted!`);
     }
 
-    this.#points = [...this.#points.slice(0, index), ...this.#points.slice(index + 1)];
+    try {
+      await this.#pointApiService.deletePoint(update);
+      this.#points = [...this.#points.slice(0, index), ...this.#points.slice(index + 1)];
+      this._notify(updateType);
+    } catch (err) {
+      throw new Error(`Can't delete point ${update}`);
+    }
 
     this._notify(updateType);
   };

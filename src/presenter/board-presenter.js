@@ -5,12 +5,14 @@ import SortView from '../view/trip-sort-view.js';
 import NoEventView from '../view/no-event-view.js';
 import LoadingView from '../view/loading-view.js';
 
-import { EMPTY_POINT_MESSAGE, SortType, FILTER_TYPE, UserAction, UPDATE_TYPE } from '../const.js';
+import { EMPTY_POINT_MESSAGE, SortType, FILTER_TYPE, UserAction, UPDATE_TYPE, TIME_LIMIT } from '../const.js';
 import { sortByDate, sortByPrice, sortByDuration } from '../utils/point.js';
 import { filterPoints } from '../utils/filter.js';
 
 import PointPresenter from './point-presenter.js';
 import NewPointPresenter from './new-point-presenter.js';
+
+import UiBlocker from '../framework/ui-blocker/ui-blocker.js';
 
 export default class BoardPresenter {
 
@@ -30,6 +32,8 @@ export default class BoardPresenter {
 
   #currentSortType = SortType.DEFAULT;
   #isLoading = true;
+
+  #uiBlocker = new UiBlocker(TIME_LIMIT.LOWER_LIMIT, TIME_LIMIT.UPPER_LIMIT);
 
   constructor (container, pointModel, filterModel) {
     this.#container = container;
@@ -158,20 +162,45 @@ export default class BoardPresenter {
     }
   };
 
-  #handleViewAction = (actionType, updateType, update) => {
+  #handleViewAction = async (actionType, updateType, update) => {
+    this.#uiBlocker.block();
+
     switch (actionType) {
       case UserAction.ADD_POINT:
-        this.#pointModel.addPoint(updateType, update);
+        this.#pointPresenter.get(update.id).setSaving();
+
+        try {
+          await this.#pointModel.addPoint(updateType, update);
+        } catch (err) {
+          this.#pointPresenter.get(update.id).setAborting();
+        }
+
         break;
       case UserAction.DELETE_POINT:
-        this.#pointModel.deletePoint(updateType, update);
+        this.#pointPresenter.get(update.id).setDeleting();
+
+        try {
+          await this.#pointModel.deletePoint(updateType, update);
+        } catch (err) {
+          this.#pointPresenter.get(update.id).setAborting();
+        }
+
         break;
       case UserAction.UPDATE_POINT:
-        this.#pointModel.updatePoint(updateType, update);
+        this.#pointPresenter.get(update.id).setSaving();
+
+        try {
+          await this.#pointModel.updatePoint(updateType, update);
+        } catch (err) {
+          this.#pointPresenter.get(update.id).setAborting();
+        }
+
         break;
       default:
         throw new Error(`Warning! Current action type ${actionType} is unknown!`);
     }
+
+    this.#uiBlocker.unblock();
   };
 
   #clearBoard = ({ resetSortType = false } = {}) => {
