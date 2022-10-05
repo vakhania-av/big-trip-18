@@ -3,6 +3,8 @@ import EventEditView from '../view/event-edit-view.js';
 import { UserAction, UPDATE_TYPE, FORM_TYPE, BLANK_POINT } from '../const.js';
 import { isEscKey } from '../utils.js';
 
+const { AFTERBEGIN } = RenderPosition;
+
 export default class NewPointPresenter {
   #pointListContainer = null;
   #editFormComponent = null;
@@ -40,7 +42,7 @@ export default class NewPointPresenter {
     this.#editFormComponent.setItemClickHandler(this.#handleCloseEditForm);
     this.#editFormComponent.setCancelClickHandler(this.#handleCancelClick);
 
-    render(this.#editFormComponent, this.#pointListContainer, RenderPosition.AFTERBEGIN);
+    render(this.#editFormComponent, this.#pointListContainer, AFTERBEGIN);
     document.addEventListener('keydown', this.#escKeyDownClickHandler);
 
   };

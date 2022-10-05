@@ -42,7 +42,7 @@ export default class PointPresenter {
     this.#pointEditComponent.setItemClickHandler(this.#handleCloseEditForm);
     this.#pointEditComponent.setDeleteClickHandler(this.#handleDeleteClick);
 
-    if (!prevPointComponent || !prevPointEditComponent) {
+    if (prevPointComponent === null || prevPointEditComponent === null) {
       render(this.#pointComponent, this.#container);
       return;
     }
@@ -56,9 +56,8 @@ export default class PointPresenter {
       this.#mode = POINT_MODE.DEFAULT;
     }
 
-    remove(prevPointComponent);
     remove(prevPointEditComponent);
-
+    remove(prevPointComponent);
   };
 
   #escKeyDownHandler = (evt) => {
@@ -98,10 +97,7 @@ export default class PointPresenter {
       this.#point.type !== update.type ||
       this.#point.basePrice !== update.basePrice;
 
-    const condition = isMinorUpdate ? UPDATE_TYPE.MINOR : UPDATE_TYPE.PATCH;
-
-    this.#changeData(UserAction.UPDATE_POINT, condition, update);
-    this.#replaceFormToPoint();
+    this.#changeData(UserAction.UPDATE_POINT, isMinorUpdate ? UPDATE_TYPE.MINOR : UPDATE_TYPE.PATCH, update);
   };
 
   #handleFavoriteClick = () => {
@@ -134,7 +130,7 @@ export default class PointPresenter {
   };
 
   setDeleting = () => {
-    if (this.#mode === POINT_MODE.DEFAULT) {
+    if (this.#mode === POINT_MODE.EDITING) {
       this.#pointEditComponent.updateElement({
         isDisabled: true,
         isDeleting: true

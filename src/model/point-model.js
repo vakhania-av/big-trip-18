@@ -111,7 +111,7 @@ export default class PointModel extends Observable {
       const response = await this.#pointApiService.updatePoint(update);
       const updatedPoint = this.#adaptToClient(response);
 
-      this.#points = [...this.#points.slice(0, index), updatedPoint, this.#points.slice(index + 1)];
+      this.#points = [...this.#points.slice(0, index), updatedPoint, ...this.#points.slice(index + 1)];
       this._notify(updateType, updatedPoint);
     } catch(err) {
       throw new Error(`Current point ${update} can't be updated.\nError: ${err}`);

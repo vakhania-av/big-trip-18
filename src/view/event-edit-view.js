@@ -1,7 +1,7 @@
 import he from 'he';
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import { isCheckedOffer, humanizeDate, getCheckedDestination } from '../utils.js';
-import { TYPES, FORM_TYPE, CITIES } from '../const.js';
+import { TYPES, FORM_TYPE } from '../const.js';
 import flatpickr from 'flatpickr';
 
 import 'flatpickr/dist/flatpickr.min.css';
@@ -12,7 +12,8 @@ const createAvailableOffersTemplate = (point, availableOffers, isDisabled) => (
         <input
           class="event__offer-checkbox visually-hidden"
           id="event-offer-${point.type}-${offer.id}"
-          type="checkbox" name="event-offer-${point.type}"
+          type="checkbox" 
+          name="event-offer-${point.type}"
           ${isCheckedOffer(offer, point) ? 'checked' : ''}
           data-offer-id="${offer.id}"
           ${isDisabled ? 'disabled' : ''}
@@ -55,9 +56,13 @@ const createTypeListTemplate = (point, types) => (
       `<div class="event__type-item">
         <input 
           id="event-type-${type}-1" 
-          class="event__type-input  visually-hidden" 
-          type="radio" name="event-type" 
-          value="${type}" ${isChecked ? 'checked' : ''}>
+          class="event__type-input  
+          visually-hidden" 
+          type="radio" 
+          name="event-type" 
+          value="${type}" 
+          ${isChecked ? 'checked' : ''}
+        >
         <label class="event__type-label  event__type-label--${type}" for="event-type-${type}-1">${pointType}</label>
       </div>`
     );
@@ -85,6 +90,7 @@ const createDescriptionTemplate = (selectedDestination) => {
     `<section class="event__section  event__section--destination">
       <h3 class="event__section-title  event__section-title--destination">Destination</h3>
       <p class="event__destination-description">${selectedDestination.description}</p>
+
       ${createImageContainerTemplate(selectedDestination)}
     </section>`
   );
@@ -143,7 +149,7 @@ const createEventEditTemplate = (point, offers, destinations, formType) => {
             ${isDisabled ? 'disabled' : ''}
           >
           <datalist id="destination-list-1">
-            ${CITIES.map((destination) => `option value="${destination.name}"></option`).join('')}
+            ${destinations.map((destination) => `option value="${destination.name}"></option`).join('')}
           </datalist>
         </div>
 
@@ -188,15 +194,17 @@ const createEventEditTemplate = (point, offers, destinations, formType) => {
         </div>
 
         <button class="event__save-btn  btn  btn--blue" type="submit" ${isDisabled ? 'disabled' : ''}>${isSaving ? 'Saving...' : 'Save'}</button>
-        <button class="event__reset-btn" type="reset">${isDisabled ? 'disabled' : ''}
-        ${createResetButtonText(formType, isDeleting)}
+        <button class="event__reset-btn" type="reset" ${isDisabled ? 'disabled' : ''}>
+          ${createResetButtonText(formType, isDeleting)}
         </button>
         <button class="event__rollup-btn" type="button">
           <span class="visually-hidden">Open event</span>
         </button>
       </header>
       <section class="event__details">
+
         ${createOffersTemplate(point, offers, isDisabled)}
+
         ${createDescriptionTemplate(selectedDestination)}
       </section>
     </form>

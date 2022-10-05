@@ -1,11 +1,6 @@
 import ApiService from './framework/api-service.js';
 import { METHOD } from './const.js';
 
-const Method = {
-  GET: 'GET',
-  PUT: 'PUT'
-};
-
 export default class TaskApiService extends ApiService {
   get points () {
     return this._load({ url: 'points' }).then(ApiService.parseResponse);
@@ -47,7 +42,7 @@ export default class TaskApiService extends ApiService {
   updatePoint = async (point) => {
     const response = await this._load({
       url: `points/${point.id}`,
-      method: Method.PUT,
+      method: METHOD.PUT,
       body: JSON.stringify(this.#adaptToServer(point)),
       headers: new Headers({'Content-Type': 'application/json'}),
     });
