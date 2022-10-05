@@ -4,7 +4,6 @@ import EventItemView from '../view/event-item-view.js';
 import { render, replace, remove } from '../framework/render.js';
 
 import { UPDATE_TYPE, UserAction, POINT_MODE } from '../const.js';
-import { isEqualDates } from '../utils/point.js';
 import { isEscKey } from '../utils.js';
 
 export default class PointPresenter {
