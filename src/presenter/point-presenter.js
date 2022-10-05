@@ -4,7 +4,6 @@ import EventItemView from '../view/event-item-view.js';
 import { render, replace, remove } from '../framework/render.js';
 
 import { UPDATE_TYPE, UserAction, POINT_MODE } from '../const.js';
-import { isEqualDates } from '../utils/point.js';
 import { isEscKey } from '../utils.js';
 
 export default class PointPresenter {
@@ -91,13 +90,8 @@ export default class PointPresenter {
   };
 
   #handleFormSubmit = (update) => {
-    const isMinorUpdate =
-      !isEqualDates(this.#point.dateFrom, update.dateFrom) ||
-      !isEqualDates(this.#point.dateTo, update.dateTo) ||
-      this.#point.type !== update.type ||
-      this.#point.basePrice !== update.basePrice;
-
-    this.#changeData(UserAction.UPDATE_POINT, isMinorUpdate ? UPDATE_TYPE.MINOR : UPDATE_TYPE.PATCH, update);
+    this.#changeData(UserAction.UPDATE_POINT, UPDATE_TYPE.MAJOR, update);
+    document.removeEventListener('keydown', this.#escKeyDownHandler);
   };
 
   #handleFavoriteClick = () => {
