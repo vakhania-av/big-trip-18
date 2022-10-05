@@ -1,14 +1,19 @@
 // Модель для сущности "Точка маршрута"
 
 import Observable from '../framework/observable.js';
-import { generatePoint } from '../mock/point.js';
-import { generateOffers } from '../mock/offer.js';
-import { generateDestinations } from '../mock/destination.js';
+
+import { UPDATE_TYPE } from '../const.js';
 
 export default class PointModel extends Observable {
-  #points = Array.from({length: 10}, generatePoint);
-  #offers = generateOffers();
-  #destinations = generateDestinations();
+  #pointApiService = null;
+  #points = [];
+  #offers = [];
+  #destinations = [];
+
+  constructor (pointApiService) {
+    super();
+    this.#pointApiService = pointApiService;
+  }
 
   get offers () {
     return this.#offers;
@@ -21,6 +26,43 @@ export default class PointModel extends Observable {
   get destinations () {
     return this.#destinations;
   }
+
+  // Метод инициализации
+  init = async () => {
+    try {
+      const points = await this.#pointApiService.points;
+      const offers = await this.#pointApiService.offers;
+      const destinations = await this.#pointApiService.destinations;
+
+      this.#points = points.map(this.#adaptToClient);
+      this.#offers = offers;
+      this.#destinations = destinations;
+
+    } catch (err) {
+      this.#points = [];
+      this.#offers = [];
+      this.#destinations = [];
+    }
+
+    this._notify(UPDATE_TYPE.INIT);
+  };
+
+  // Метод-адаптер для преобразования данных в сторону клиента
+  #adaptToClient = (point) => {
+    const adaptedPoint = {...point,
+      basePrice: point['base_price'],
+      dateFrom: new Date(point['date_from']),
+      dateTo: new Date(point['date_to']),
+      isFavorite: point['is_favorite']
+    };
+
+    delete adaptedPoint['base_price'];
+    delete adaptedPoint['date_from'];
+    delete adaptedPoint['date_to'];
+    delete adaptedPoint['is_favorite'];
+
+    return adaptedPoint;
+  };
 
   // Добавление точки маршрута
   addPoint = (updateType, update) => {
