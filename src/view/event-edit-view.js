@@ -192,7 +192,10 @@ const createEventEditTemplate = (point, offers, destinations, formType) => {
             >
           </div>
 
-          <button class="event__save-btn  btn  btn--blue" type="submit" ${isDisabled ? 'disabled' : ''}>${isSaving ? 'Saving...' : 'Save'}</button>
+          <button class="event__save-btn  btn  btn--blue" type="submit"
+            ${isDisabled ? 'disabled' : ''}>
+            ${isSaving ? 'Saving...' : 'Save'}
+          </button>
           <button class="event__reset-btn" type="reset" ${isDisabled ? 'disabled' : ''}>
             ${createResetButtonText(formType, isDeleting)}
           </button>
@@ -288,6 +291,7 @@ export default class EventEditView extends AbstractStatefulView {
   // Обработчик отправки данных формы
   #formSubmitHandler = (evt) => {
     evt.preventDefault();
+
     this._callback.formSubmit(EventEditView.parseStateToPoint(this._state));
   };
 

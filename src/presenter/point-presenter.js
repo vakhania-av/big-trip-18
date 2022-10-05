@@ -91,13 +91,8 @@ export default class PointPresenter {
   };
 
   #handleFormSubmit = (update) => {
-    const isMinorUpdate =
-      !isEqualDates(this.#point.dateFrom, update.dateFrom) ||
-      !isEqualDates(this.#point.dateTo, update.dateTo) ||
-      this.#point.type !== update.type ||
-      this.#point.basePrice !== update.basePrice;
-
-    this.#changeData(UserAction.UPDATE_POINT, isMinorUpdate ? UPDATE_TYPE.MINOR : UPDATE_TYPE.PATCH, update);
+    this.#changeData(UserAction.UPDATE_POINT, UPDATE_TYPE.MAJOR, update);
+    document.removeEventListener('keydown', this.#escKeyDownHandler);
   };
 
   #handleFavoriteClick = () => {
