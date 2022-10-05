@@ -49,11 +49,15 @@ const calculateDurationInPoint = (startDate, endDate) => {
 };
 
 // Проверка на выбранные дополнительные опции
-const isCheckedOffer = (offer, point) => point.offers.some((currentOffer) => currentOffer.id === offer.id);
+const isCheckedOffer = (offer, point) => point.offers.some((currentOffer) => currentOffer === offer.id);
 
 // Функция сопоставления выбранных дополнительных опций
 const getCheckedOffers = (point, offers) => {
   const offersByType = offers.find((offer) => (point.type === offer.type));
+
+  if (!offersByType || !offersByType.offers) {
+    return;
+  }
 
   return offersByType.offers.filter((offer) => point.offers.some((id) => id === offer.id));
 };

@@ -3,14 +3,21 @@ import { render, RenderPosition, remove } from '../framework/render.js';
 import EventListView from '../view/event-list-view.js';
 import SortView from '../view/trip-sort-view.js';
 import NoEventView from '../view/no-event-view.js';
-import { EMPTY_POINT_MESSAGE, SortType, FILTER_TYPE, UserAction, UPDATE_TYPE } from '../const.js';
+import LoadingView from '../view/loading-view.js';
+import StartErrorView from '../view/start-error-view.js';
+
+import { EMPTY_POINT_MESSAGE, SortType, FILTER_TYPE, UserAction, UPDATE_TYPE, TIME_LIMIT } from '../const.js';
 import { sortByDate, sortByPrice, sortByDuration } from '../utils/point.js';
 import { filterPoints } from '../utils/filter.js';
+
 import PointPresenter from './point-presenter.js';
 import NewPointPresenter from './new-point-presenter.js';
 
-export default class BoardPresenter {
+import UiBlocker from '../framework/ui-blocker/ui-blocker.js';
 
+const { AFTERBEGIN } = RenderPosition;
+
+export default class BoardPresenter {
   #container = null;
   #pointModel = null;
   #filterModel = null;
@@ -18,6 +25,8 @@ export default class BoardPresenter {
   #emptyPointMessage = null;
 
   #listComponent = new EventListView();
+  #loadingComponent = new LoadingView();
+  #startErrorComponent = new StartErrorView();
   #sortComponent = null;
   #noPointComponent = null;
 
@@ -25,6 +34,10 @@ export default class BoardPresenter {
   #newPointPresenter = null;
 
   #currentSortType = SortType.DEFAULT;
+  #isLoading = true;
+  #isStartError = false;
+
+  #uiBlocker = new UiBlocker(TIME_LIMIT.LOWER_LIMIT, TIME_LIMIT.UPPER_LIMIT);
 
   constructor (container, pointModel, filterModel) {
     this.#container = container;
@@ -69,6 +82,16 @@ export default class BoardPresenter {
 
   // Отрисовка доски (контейнера)
   #renderBoard = () => {
+    if (this.#isLoading) {
+      this.#renderLoading();
+      return;
+    }
+
+    if (this.#isStartError) {
+      this.#renderStartError();
+      return;
+    }
+
     const points = this.points;
     this.#emptyPointMessage = EMPTY_POINT_MESSAGE[this.#filterModel.filter];
 
@@ -96,7 +119,7 @@ export default class BoardPresenter {
   #renderSort = () => {
     this.#sortComponent = new SortView(this.#currentSortType);
     this.#sortComponent.setSortTypeChangeHandler(this.#sortTypeChangeHandler);
-    render(this.#sortComponent, this.#container, RenderPosition.AFTERBEGIN);
+    render(this.#sortComponent, this.#container, AFTERBEGIN);
   };
 
   #renderPoints = (points) => {
@@ -138,25 +161,60 @@ export default class BoardPresenter {
         this.#clearBoard({ resetSortType: true });
         this.#renderBoard();
         break;
+      case UPDATE_TYPE.INIT:
+        this.#isLoading = false;
+        remove(this.#loadingComponent);
+        this.#renderBoard();
+        break;
+      case UPDATE_TYPE.INIT_ERROR:
+        this.#isLoading = false;
+        remove(this.#loadingComponent);
+        this.#isStartError = true;
+        this.#renderBoard();
+        break;
       default:
         throw new Error(`Warning! Update type ${updateType} is unkmown!`);
     }
   };
 
-  #handleViewAction = (actionType, updateType, update) => {
+  #handleViewAction = async (actionType, updateType, update) => {
+    this.#uiBlocker.block();
+
     switch (actionType) {
       case UserAction.ADD_POINT:
-        this.#pointModel.addPoint(updateType, update);
+        this.#newPointPresenter.setSaving();
+
+        try {
+          await this.#pointModel.addPoint(updateType, update);
+        } catch (err) {
+          this.#newPointPresenter.setAborting();
+        }
+
         break;
       case UserAction.DELETE_POINT:
-        this.#pointModel.deletePoint(updateType, update);
+        this.#pointPresenter.get(update.id).setDeleting();
+
+        try {
+          await this.#pointModel.deletePoint(updateType, update);
+        } catch (err) {
+          this.#pointPresenter.get(update.id).setAborting();
+        }
+
         break;
       case UserAction.UPDATE_POINT:
-        this.#pointModel.updatePoint(updateType, update);
+        this.#pointPresenter.get(update.id).setSaving();
+        try {
+          await this.#pointModel.updatePoint(updateType, update);
+        } catch(err) {
+          this.#pointPresenter.get(update.id).setAborting();
+        }
+
         break;
       default:
         throw new Error(`Warning! Current action type ${actionType} is unknown!`);
     }
+
+    this.#uiBlocker.unblock();
   };
 
   #clearBoard = ({ resetSortType = false } = {}) => {
@@ -169,9 +227,20 @@ export default class BoardPresenter {
     }
 
     remove(this.#sortComponent);
+    remove(this.#loadingComponent);
 
     if (resetSortType) {
       this.#currentSortType = SortType.DEFAULT;
     }
+  };
+
+  // Метод, отвечающий за preloader во время загрузки данных
+  #renderLoading = () => {
+    render(this.#loadingComponent, this.#container);
+  };
+
+  // Метод, отвечающий за вывод сообщении об ошибке "Something went wrong :((( Try again later"
+  #renderStartError = () => {
+    render(this.#startErrorComponent, this.#container);
   };
 }
