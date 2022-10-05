@@ -44,7 +44,7 @@ export default class TaskApiService extends ApiService {
       url: `points/${point.id}`,
       method: METHOD.PUT,
       body: JSON.stringify(this.#adaptToServer(point)),
-      headers: new Headers({'Content-Type': 'application/json'}),
+      headers: new Headers({'Content-Type': 'application/json'})
     });
 
     const parsedResponse = await ApiService.parseResponse(response);
@@ -55,7 +55,7 @@ export default class TaskApiService extends ApiService {
   // Метод-адаптер для преобразования данных в сторону сервера
   #adaptToServer = (point) => {
     const adaptedPoint = {...point,
-      'base_price': point.basePrice,
+      'base_price': Number(point.basePrice),
       'date_from': point.dateFrom,
       'date_to': point.dateTo,
       'is_favorite': point.isFavorite
