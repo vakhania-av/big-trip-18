@@ -292,6 +292,11 @@ export default class EventEditView extends AbstractStatefulView {
 
   // Установка дат в календаре
   #setDateFromPicker = () => {
+    if (this.#datepickerFrom) {
+      this.#datepickerFrom.destroy();
+      this.#datepickerFrom = null;
+    }
+
     if (this._state.dateFrom) {
       this.#datepickerFrom = flatpickr(
         this.element.querySelector('#event-start-time-1'),
@@ -308,6 +313,11 @@ export default class EventEditView extends AbstractStatefulView {
   };
 
   #setDateToPicker = () => {
+    if (this.#datepickerTo) {
+      this.#datepickerTo.destroy();
+      this.#datepickerTo = null;
+    }
+
     if (this._state.dateTo) {
       this.#datepickerTo = flatpickr(
         this.element.querySelector('#event-end-time-1'),
@@ -329,6 +339,7 @@ export default class EventEditView extends AbstractStatefulView {
     this.element.querySelector('.event__input--destination').addEventListener('change', this.#destinationChangeHandler);
     this.element.querySelector('.event__available-offers')?.addEventListener('change', this.#offerChooseHandler);
     this.element.querySelector('.event__input--price').addEventListener('change', this.#priceChangeHandler);
+
     this.#setDateFromPicker();
     this.#setDateToPicker();
   };
@@ -336,8 +347,6 @@ export default class EventEditView extends AbstractStatefulView {
   // Сброс внутренних обработчиков
   _restoreHandlers = () => {
     this.#setInnerHandlers();
-    this.#setDateFromPicker();
-    this.#setDateToPicker();
 
     this.setFormSubmitHandler(this._callback.formSubmit);
     this.setItemClickHandler(this._callback.click);
