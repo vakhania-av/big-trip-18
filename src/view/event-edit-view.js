@@ -230,7 +230,6 @@ export default class EventEditView extends AbstractStatefulView {
     this._state = EventEditView.parsePointToState(point, this.#formType);
 
     this.#setInnerHandlers();
-    this.#setDatepicker();
   }
 
   get template () {
@@ -292,26 +291,34 @@ export default class EventEditView extends AbstractStatefulView {
   };
 
   // Установка дат в календаре
-  #setDatepicker = () => {
-    if (this._state.dateFrom && this._state.dateTo) {
+  #setDateFromPicker = () => {
+    if (this._state.dateFrom) {
       this.#datepickerFrom = flatpickr(
         this.element.querySelector('#event-start-time-1'),
         {
           enableTime: true,
           dateFormat: 'd/m/y H:i',
+          maxDate: this._state.dateTo,
           defaultDate: this._state.dateFrom,
-          onChange: this.#dateFromChangeHandler
-        },
+          onChange: this.#dateFromChangeHandler,
+          'time_24hr': true
+        }
       );
+    }
+  };
 
+  #setDateToPicker = () => {
+    if (this._state.dateTo) {
       this.#datepickerTo = flatpickr(
         this.element.querySelector('#event-end-time-1'),
         {
           enableTime: true,
           dateFormat: 'd/m/y H:i',
+          minDate: this._state.dateFrom,
           defaultDate: this._state.dateTo,
-          onChange: this.#dateToChangeHandler
-        },
+          onChange: this.#dateToChangeHandler,
+          'time_24hr': true
+        }
       );
     }
   };
@@ -322,14 +329,16 @@ export default class EventEditView extends AbstractStatefulView {
     this.element.querySelector('.event__input--destination').addEventListener('change', this.#destinationChangeHandler);
     this.element.querySelector('.event__available-offers')?.addEventListener('change', this.#offerChooseHandler);
     this.element.querySelector('.event__input--price').addEventListener('change', this.#priceChangeHandler);
-    //this.#setDateFromPicker();
-    //this.#setDateToPicker();
+    this.#setDateFromPicker();
+    this.#setDateToPicker();
   };
 
   // Сброс внутренних обработчиков
   _restoreHandlers = () => {
     this.#setInnerHandlers();
-    this.#setDatepicker();
+    this.#setDateFromPicker();
+    this.#setDateToPicker();
+
     this.setFormSubmitHandler(this._callback.formSubmit);
     this.setItemClickHandler(this._callback.click);
     this.setDeleteClickHandler(this._callback.deleteClick);
