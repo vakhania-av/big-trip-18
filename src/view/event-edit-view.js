@@ -144,6 +144,7 @@ const createEventEditTemplate = (point, offers, destinations, formType) => {
               id="event-destination-${point.id}"
               type="text"
               name="event-destination"
+              required
               value="${selectedDestination ? he.encode(selectedDestination.name) : ''}" list="destination-list-1"
               ${isDisabled ? 'disabled' : ''}
             >
@@ -235,6 +236,45 @@ export default class EventEditView extends AbstractStatefulView {
     return createEventEditTemplate(this._state, this.#offers, this.#destinations, this.#formType);
   }
 
+  // Подписка по нажатию кнопки отправки формы
+  setFormSubmitHandler = (cb) => {
+    this._callback.formSubmit = cb;
+    this.element.querySelector('form').addEventListener('submit', this.#formSubmitHandler);
+  };
+
+  // Добавляет обработчик события на нажатие кнопки удаления
+  setDeleteClickHandler = (cb) => {
+    this._callback.deleteClick = cb;
+
+    if (this.#formType === FORM_TYPE.CREATING) {
+      return;
+    }
+
+    this.element.querySelector('.event__reset-btn').addEventListener('click', this.#formDeleteClickHandler);
+  };
+
+  // Добавляет обработчик события на нажатие кнопки отмены
+  setCancelClickHandler = (cb) => {
+    this._callback.cancelClick = cb;
+
+    if (this.#formType === FORM_TYPE.EDITING) {
+      return;
+    }
+
+    this.element.querySelector('.event__reset-btn').addEventListener('click', this.#formCancelClickHandler);
+  };
+
+  // Подписка по нажатию кнопки
+  setItemClickHandler = (cb) => {
+    this._callback.click = cb;
+    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#clickHandler);
+  };
+
+  // Метод сброса
+  reset = (point, destinations) => {
+    this.updateElement(EventEditView.parsePointToState(point, destinations));
+  };
+
   // Перегрузим родительский метод, чтобы при удалении убирался ненужный элемент календаря из DOM
   removeElement = () => {
     super.removeElement();
@@ -250,57 +290,47 @@ export default class EventEditView extends AbstractStatefulView {
     }
   };
 
-  // Выполняет разбор данных точки в состояние
-  static parsePointToState = (point) => (
-    {...point,
-      isDisabled: false,
-      isDeleting: false,
-      isSaving: false
+  // Установка дат в календаре
+  #setDateFromPicker = () => {
+    if (this.#datepickerFrom) {
+      this.#datepickerFrom.destroy();
+      this.#datepickerFrom = null;
     }
-  );
 
-  // Выполняет разбор данных из состояния для точки
-  static parseStateToPoint = (state) => {
-    const point = {...state};
-
-    delete point.isDisabled;
-    delete point.isDeleting;
-    delete point.isSaving;
-
-    return point;
+    if (this._state.dateFrom) {
+      this.#datepickerFrom = flatpickr(
+        this.element.querySelector('#event-start-time-1'),
+        {
+          enableTime: true,
+          dateFormat: 'd/m/y H:i',
+          maxDate: this._state.dateTo,
+          defaultDate: this._state.dateFrom,
+          onChange: this.#dateFromChangeHandler,
+          'time_24hr': true
+        }
+      );
+    }
   };
 
-  // Подписка по нажатию кнопки
-  setItemClickHandler = (cb) => {
-    this._callback.click = cb;
-    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#clickHandler);
-  };
+  #setDateToPicker = () => {
+    if (this.#datepickerTo) {
+      this.#datepickerTo.destroy();
+      this.#datepickerTo = null;
+    }
 
-  // Подписка по нажатию кнопки отправки формы
-  setFormSubmitHandler = (cb) => {
-    this._callback.formSubmit = cb;
-    this.element.querySelector('form').addEventListener('submit', this.#formSubmitHandler);
-  };
-
-  // Обработчик нажатия на кнопку
-  #clickHandler = (evt) => {
-    evt.preventDefault();
-    this._callback.click();
-  };
-
-  // Обработчик отправки данных формы
-  #formSubmitHandler = (evt) => {
-    evt.preventDefault();
-    this._callback.formSubmit(EventEditView.parseStateToPoint(this._state));
-  };
-
-  // Сброс внутренних обработчиков
-  _restoreHandlers = () => {
-    this.#setInnerHandlers();
-    this.setFormSubmitHandler(this._callback.formSubmit);
-    this.setItemClickHandler(this._callback.click);
-    this.setDeleteClickHandler(this._callback.deleteClick);
-    this.setCancelClickHandler(this._callback.cancelClick);
+    if (this._state.dateTo) {
+      this.#datepickerTo = flatpickr(
+        this.element.querySelector('#event-end-time-1'),
+        {
+          enableTime: true,
+          dateFormat: 'd/m/y H:i',
+          minDate: this._state.dateFrom,
+          defaultDate: this._state.dateTo,
+          onChange: this.#dateToChangeHandler,
+          'time_24hr': true
+        }
+      );
+    }
   };
 
   // Устанавливает внутренние обработчики
@@ -309,8 +339,33 @@ export default class EventEditView extends AbstractStatefulView {
     this.element.querySelector('.event__input--destination').addEventListener('change', this.#destinationChangeHandler);
     this.element.querySelector('.event__available-offers')?.addEventListener('change', this.#offerChooseHandler);
     this.element.querySelector('.event__input--price').addEventListener('change', this.#priceChangeHandler);
+
     this.#setDateFromPicker();
     this.#setDateToPicker();
+  };
+
+  // Сброс внутренних обработчиков
+  _restoreHandlers = () => {
+    this.#setInnerHandlers();
+
+    this.setFormSubmitHandler(this._callback.formSubmit);
+    this.setItemClickHandler(this._callback.click);
+    this.setDeleteClickHandler(this._callback.deleteClick);
+    this.setCancelClickHandler(this._callback.cancelClick);
+  };
+
+  // Обработчик даты начала путешествия
+  #dateFromChangeHandler = ([userDate]) => {
+    this.updateElement({
+      dateFrom: userDate
+    });
+  };
+
+  // Обработчик даты окончания путешествия
+  #dateToChangeHandler = ([userDate]) => {
+    this.updateElement({
+      dateTo: userDate
+    });
   };
 
   // Обработчик смены точки маршрута
@@ -363,73 +418,30 @@ export default class EventEditView extends AbstractStatefulView {
     }
   };
 
-  // Метод сброса
-  reset = (point, destinations) => {
-    this.updateElement(EventEditView.parsePointToState(point, destinations));
+  // Обработчик нажатия на кнопку
+  #clickHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.click();
   };
 
-  // Обработчик даты начала путешествия
-  #dateFromChangeHandler = ([userDate]) => {
-    this.updateElement({
-      dateFrom: userDate
-    });
-  };
+  // Обработчик отправки данных формы
+  #formSubmitHandler = (evt) => {
+    evt.preventDefault();
 
-  // Обработчик даты окончания путешествия
-  #dateToChangeHandler = ([userDate]) => {
-    this.updateElement({
-      dateTo: userDate
-    });
-  };
+    const destinationInputValue = this.element.querySelector('.event__input--destination').value;
+    const priceInputValue = this.element.querySelector('.event__input--price').value;
+    const submitBtn = this.element.querySelector('.event__save-btn');
 
-  #setDateFromPicker = () => {
-    this.#datepickerFrom = flatpickr(
-      this.element.querySelector('#event-start-time-1'),
-      {
-        enableTime: true,
-        dateFormat: 'd/m/y H:i',
-        minDate: this._state.dateTo,
-        defaultDate: this._state.dateFrom,
-        onChange: this.#dateFromChangeHandler,
-        'time_24hr': true
-      }
-    );
-  };
-
-  #setDateToPicker = () => {
-    this.#datepickerTo = flatpickr(
-      this.element.querySelector('#event-end-time-1'),
-      {
-        enableTime: true,
-        dateFormat: 'd/m/y H:i',
-        minDate: this._state.dateFrom,
-        defaultDate: this._state.dateTo,
-        onChange: this.#dateToChangeHandler,
-        'time_24hr': true
-      }
-    );
-  };
-
-  // Добавляет обработчик события на нажатие кнопки удаления
-  setDeleteClickHandler = (cb) => {
-    this._callback.deleteClick = cb;
-
-    if (this.#formType === FORM_TYPE.CREATING) {
+    if (priceInputValue < 1) {
       return;
     }
 
-    this.element.querySelector('.event__reset-btn').addEventListener('click', this.#formDeleteClickHandler);
-  };
-
-  // Добавляет обработчик события на нажатие кнопки отмены
-  setCancelClickHandler = (cb) => {
-    this._callback.cancelClick = cb;
-
-    if (this.#formType === FORM_TYPE.EDITING) {
+    if (destinationInputValue === '') {
+      submitBtn.disabled = true;
       return;
     }
 
-    this.element.querySelector('.event__reset-btn').addEventListener('click', this.#formCancelClickHandler);
+    this._callback.formSubmit(EventEditView.parseStateToPoint(this._state));
   };
 
   // Обработчик события кнопки удаления
@@ -444,4 +456,23 @@ export default class EventEditView extends AbstractStatefulView {
     this._callback.cancelClick(EventEditView.parseStateToPoint(this._state));
   };
 
+  // Выполняет разбор данных точки в состояние
+  static parsePointToState = (point) => (
+    {...point,
+      isDisabled: false,
+      isDeleting: false,
+      isSaving: false
+    }
+  );
+
+  // Выполняет разбор данных из состояния для точки
+  static parseStateToPoint = (state) => {
+    const point = {...state};
+
+    delete point.isDisabled;
+    delete point.isDeleting;
+    delete point.isSaving;
+
+    return point;
+  };
 }
