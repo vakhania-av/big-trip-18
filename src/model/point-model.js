@@ -95,8 +95,6 @@ export default class PointModel extends Observable {
     } catch (err) {
       throw new Error(`Can't delete point ${update}`);
     }
-
-    this._notify(updateType);
   };
 
   // Обновление точки маршрута

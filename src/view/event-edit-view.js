@@ -144,6 +144,7 @@ const createEventEditTemplate = (point, offers, destinations, formType) => {
               id="event-destination-${point.id}"
               type="text"
               name="event-destination"
+              required
               value="${selectedDestination ? he.encode(selectedDestination.name) : ''}" list="destination-list-1"
               ${isDisabled ? 'disabled' : ''}
             >
@@ -229,6 +230,7 @@ export default class EventEditView extends AbstractStatefulView {
     this._state = EventEditView.parsePointToState(point, this.#formType);
 
     this.#setInnerHandlers();
+    this.#setDatepicker();
   }
 
   get template () {
@@ -291,12 +293,27 @@ export default class EventEditView extends AbstractStatefulView {
   // Обработчик отправки данных формы
   #formSubmitHandler = (evt) => {
     evt.preventDefault();
+
+    const destinationInputValue = this.element.querySelector('.event__input--destination').value;
+    const priceInputValue = this.element.querySelector('.event__input--price').value;
+    const submitBtn = this.element.querySelector('.event__save-btn');
+
+    if (priceInputValue < 1) {
+      return;
+    }
+
+    if (destinationInputValue === '') {
+      submitBtn.disabled = true;
+      return;
+    }
+
     this._callback.formSubmit(EventEditView.parseStateToPoint(this._state));
   };
 
   // Сброс внутренних обработчиков
   _restoreHandlers = () => {
     this.#setInnerHandlers();
+    this.#setDatepicker();
     this.setFormSubmitHandler(this._callback.formSubmit);
     this.setItemClickHandler(this._callback.click);
     this.setDeleteClickHandler(this._callback.deleteClick);
@@ -309,8 +326,8 @@ export default class EventEditView extends AbstractStatefulView {
     this.element.querySelector('.event__input--destination').addEventListener('change', this.#destinationChangeHandler);
     this.element.querySelector('.event__available-offers')?.addEventListener('change', this.#offerChooseHandler);
     this.element.querySelector('.event__input--price').addEventListener('change', this.#priceChangeHandler);
-    this.#setDateFromPicker();
-    this.#setDateToPicker();
+    //this.#setDateFromPicker();
+    //this.#setDateToPicker();
   };
 
   // Обработчик смены точки маршрута
@@ -382,7 +399,7 @@ export default class EventEditView extends AbstractStatefulView {
     });
   };
 
-  #setDateFromPicker = () => {
+  /*#setDateFromPicker = () => {
     this.#datepickerFrom = flatpickr(
       this.element.querySelector('#event-start-time-1'),
       {
@@ -407,6 +424,28 @@ export default class EventEditView extends AbstractStatefulView {
         onChange: this.#dateToChangeHandler,
         'time_24hr': true
       }
+    );
+  };*/
+
+  #setDatepicker = () => {
+    this.#datepickerFrom = flatpickr(
+      this.element.querySelector('#event-start-time-1'),
+      {
+        enableTime: true,
+        dateFormat: 'd/m/y H:i',
+        defaultDate: this._state.dateFrom,
+        onChange: this.#dateFromChangeHandler
+      },
+    );
+
+    this.#datepickerTo = flatpickr(
+      this.element.querySelector('#event-end-time-1'),
+      {
+        enableTime: true,
+        dateFormat: 'd/m/y H:i',
+        defaultDate: this._state.dateTo,
+        onChange: this.#dateToChangeHandler
+      },
     );
   };
 

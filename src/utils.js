@@ -13,20 +13,6 @@ const getRandomInt = (min, max) => {
   return Math.floor(randomNum);
 };
 
-// Функция получения случайного элемента массива
-const getRandomArrayElement = (arr) => arr[getRandomInt(0, arr.length - 1)];
-
-// Функция получения массива уникальных чисел из диапазона
-const getUniqueNumbersArray = (count, cb, min = 1, max = 5) => {
-  const items = [];
-
-  for (let i = 0; i < count; i++) {
-    items.push(cb(min, max));
-  }
-
-  return [...new Set(items)];
-};
-
 // Функции приведения даты и времени к человекочитаемому виду
 const humanizeDate = (date) => dayjs(date).format('DD/MM/YY HH:mm');
 const humanizePointDate = (date) => dayjs(date).format('MMM D');
@@ -70,8 +56,6 @@ const isEscKey = (evt) => (evt.key.includes('Escape', 'Esc'));
 
 export {
   getRandomInt,
-  getRandomArrayElement,
-  getUniqueNumbersArray,
   humanizeDate,
   humanizePointDate,
   humanizePointTime,
