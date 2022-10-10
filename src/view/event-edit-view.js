@@ -6,6 +6,27 @@ import flatpickr from 'flatpickr';
 
 import 'flatpickr/dist/flatpickr.min.css';
 
+const createTypeListTemplate = (point, types) => types.map((type) => {
+  const pointType = `${type[0].toUpperCase()}${type.slice(1)}`;
+  const isChecked = Boolean(point.type === type);
+
+  return (`
+    <div class="event__type-item">
+      <input 
+        id="event-type-${type}-1" 
+        class="event__type-input  
+        visually-hidden" 
+        type="radio" 
+        name="event-type" 
+        value="${type}" 
+        ${isChecked ? 'checked' : ''}
+      >
+      <label 
+        class="event__type-label  event__type-label--${type}" for="event-type-${type}-1">${pointType}</label>
+    </div>
+  `);
+}).join('');
+
 const createAvailableOffersTemplate = (point, availableOffers, isDisabled) => (
   availableOffers.offers.map((offer) => (`
     <div class="event__offer-selector">
@@ -47,27 +68,6 @@ const createOffersTemplate = (point, offers, isDisabled) => {
     </section>
   `);
 };
-
-const createTypeListTemplate = (point, types) => types.map((type) => {
-  const pointType = `${type[0].toUpperCase()}${type.slice(1)}`;
-  const isChecked = Boolean(point.type === type);
-
-  return (`
-    <div class="event__type-item">
-      <input 
-        id="event-type-${type}-1" 
-        class="event__type-input  
-        visually-hidden" 
-        type="radio" 
-        name="event-type" 
-        value="${type}" 
-        ${isChecked ? 'checked' : ''}
-      >
-      <label 
-        class="event__type-label  event__type-label--${type}" for="event-type-${type}-1">${pointType}</label>
-    </div>
-  `);
-}).join('');
 
 const createPicturesTemplate = (destination) => (destination.pictures.map((picture) =>
   `<img class="event__photo" src="${picture.src}" alt="${picture.description}">`).join('')
@@ -236,6 +236,24 @@ export default class EventEditView extends AbstractStatefulView {
     return createEventEditTemplate(this._state, this.#offers, this.#destinations, this.#formType);
   }
 
+  // Перегрузим родительский метод, чтобы при удалении убирался ненужный элемент календаря из DOM
+  removeElement = () => {
+    super.removeElement();
+
+    if (this.#datepickerFrom) {
+      this.destroyDatepickerFrom();
+    }
+
+    if (this.#datepickerTo) {
+      this.destroyDatepickerTo();
+    }
+  };
+
+  // Метод сброса
+  reset = (point, destinations) => {
+    this.updateElement(EventEditView.parsePointToState(point, destinations));
+  };
+
   // Подписка по нажатию кнопки отправки формы
   setFormSubmitHandler = (cb) => {
     this._callback.formSubmit = cb;
@@ -270,76 +288,6 @@ export default class EventEditView extends AbstractStatefulView {
     this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#clickHandler);
   };
 
-  // Метод сброса
-  reset = (point, destinations) => {
-    this.updateElement(EventEditView.parsePointToState(point, destinations));
-  };
-
-  // Перегрузим родительский метод, чтобы при удалении убирался ненужный элемент календаря из DOM
-  removeElement = () => {
-    super.removeElement();
-
-    if (this.#datepickerFrom) {
-      this.destroyDatepickerFrom();
-    }
-
-    if (this.#datepickerTo) {
-      this.destroyDatepickerTo();
-    }
-  };
-
-  // Установка дат в календаре
-  #setDateFromPicker = () => {
-    if (this.#datepickerFrom) {
-      this.destroyDatepickerFrom();
-    }
-
-    if (this._state.dateFrom) {
-      this.#datepickerFrom = flatpickr(
-        this.element.querySelector('#event-start-time-1'),
-        {
-          enableTime: true,
-          dateFormat: 'd/m/y H:i',
-          maxDate: this._state.dateTo,
-          defaultDate: this._state.dateFrom,
-          onChange: this.#dateFromChangeHandler,
-          'time_24hr': true
-        }
-      );
-    }
-  };
-
-  #setDateToPicker = () => {
-    if (this.#datepickerTo) {
-      this.destroyDatepickerTo();
-    }
-
-    if (this._state.dateTo) {
-      this.#datepickerTo = flatpickr(
-        this.element.querySelector('#event-end-time-1'),
-        {
-          enableTime: true,
-          dateFormat: 'd/m/y H:i',
-          minDate: this._state.dateFrom,
-          defaultDate: this._state.dateTo,
-          onChange: this.#dateToChangeHandler,
-          'time_24hr': true
-        }
-      );
-    }
-  };
-
-  // Устанавливает внутренние обработчики
-  #setInnerHandlers = () => {
-    this.element.querySelector('.event__type-group').addEventListener('change', this.#pointTypeChangeHandler);
-    this.element.querySelector('.event__input--destination').addEventListener('change', this.#destinationChangeHandler);
-    this.element.querySelector('.event__available-offers')?.addEventListener('change', this.#offerChooseHandler);
-    this.element.querySelector('.event__input--price').addEventListener('change', this.#priceChangeHandler);
-
-    this.#setDateFromPicker();
-    this.#setDateToPicker();
-  };
-
   // Сброс внутренних обработчиков
   _restoreHandlers = () => {
     this.#setInnerHandlers();
@@ -348,34 +296,6 @@ export default class EventEditView extends AbstractStatefulView {
     this.setItemClickHandler(this._callback.click);
     this.setDeleteClickHandler(this._callback.deleteClick);
     this.setCancelClickHandler(this._callback.cancelClick);
-  };
-
-  destroyDatepickerFrom = () => {
-    this.#datepickerFrom.destroy();
-    this.#datepickerFrom = null;
-  };
-
-  destroyDatepickerTo = () => {
-    this.#datepickerTo.destroy();
-    this.#datepickerTo = null;
-  };
-
-  // Обработчик даты начала путешествия
-  #dateFromChangeHandler = ([userDate]) => {
-    this.updateElement({
-      dateFrom: userDate
-    });
-
-    this.destroyDatepickerFrom();
-  };
-
-  // Обработчик даты окончания путешествия
-  #dateToChangeHandler = ([userDate]) => {
-    this.updateElement({
-      dateTo: userDate
-    });
-
-    this.destroyDatepickerTo();
   };
 
   // Обработчик смены точки маршрута
@@ -428,10 +348,22 @@ export default class EventEditView extends AbstractStatefulView {
     }
   };
 
-  // Обработчик нажатия на кнопку
-  #clickHandler = (evt) => {
-    evt.preventDefault();
-    this._callback.click();
+  // Обработчик даты начала путешествия
+  #dateFromChangeHandler = ([userDate]) => {
+    this.updateElement({
+      dateFrom: userDate
+    });
+
+    this.destroyDatepickerFrom();
+  };
+
+  // Обработчик даты окончания путешествия
+  #dateToChangeHandler = ([userDate]) => {
+    this.updateElement({
+      dateTo: userDate
+    });
+
+    this.destroyDatepickerTo();
   };
 
   // Обработчик отправки данных формы
@@ -454,6 +386,68 @@ export default class EventEditView extends AbstractStatefulView {
     this._callback.formSubmit(EventEditView.parseStateToPoint(this._state));
   };
 
+  // Установка дат в календаре
+  #setDateFromPicker = () => {
+    if (this.#datepickerFrom) {
+      this.destroyDatepickerFrom();
+    }
+
+    if (this._state.dateFrom) {
+      this.#datepickerFrom = flatpickr(
+        this.element.querySelector('#event-start-time-1'),
+        {
+          enableTime: true,
+          dateFormat: 'd/m/y H:i',
+          maxDate: this._state.dateTo,
+          defaultDate: this._state.dateFrom,
+          onChange: this.#dateFromChangeHandler,
+          'time_24hr': true
+        }
+      );
+    }
+  };
+
+  #setDateToPicker = () => {
+    if (this.#datepickerTo) {
+      this.destroyDatepickerTo();
+    }
+
+    if (this._state.dateTo) {
+      this.#datepickerTo = flatpickr(
+        this.element.querySelector('#event-end-time-1'),
+        {
+          enableTime: true,
+          dateFormat: 'd/m/y H:i',
+          minDate: this._state.dateFrom,
+          defaultDate: this._state.dateTo,
+          onChange: this.#dateToChangeHandler,
+          'time_24hr': true
+        }
+      );
+    }
+  };
+
+  destroyDatepickerFrom = () => {
+    this.#datepickerFrom.destroy();
+    this.#datepickerFrom = null;
+  };
+
+  destroyDatepickerTo = () => {
+    this.#datepickerTo.destroy();
+    this.#datepickerTo = null;
+  };
+
+  // Устанавливает внутренние обработчики
+  #setInnerHandlers = () => {
+    this.element.querySelector('.event__type-group').addEventListener('change', this.#pointTypeChangeHandler);
+    this.element.querySelector('.event__input--destination').addEventListener('change', this.#destinationChangeHandler);
+    this.element.querySelector('.event__available-offers')?.addEventListener('change', this.#offerChooseHandler);
+    this.element.querySelector('.event__input--price').addEventListener('change', this.#priceChangeHandler);
+
+    this.#setDateFromPicker();
+    this.#setDateToPicker();
+  };
+
   // Обработчик события кнопки удаления
   #formDeleteClickHandler = (evt) => {
     evt.preventDefault();
@@ -464,6 +458,12 @@ export default class EventEditView extends AbstractStatefulView {
   #formCancelClickHandler = (evt) => {
     evt.preventDefault();
     this._callback.cancelClick(EventEditView.parseStateToPoint(this._state));
+  };
+
+  // Обработчик нажатия на кнопку
+  #clickHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.click();
   };
 
   // Выполняет разбор данных точки в состояние

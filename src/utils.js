@@ -4,15 +4,6 @@ import duration from 'dayjs/plugin/duration';
 
 dayjs.extend(duration);
 
-// Функция получения случайного числа из диапазона (включительно)
-const getRandomInt = (min, max) => {
-  min = Math.ceil(min);
-  max = Math.floor(max);
-
-  const randomNum = Math.random() * (max - min + 1) + min;
-  return Math.floor(randomNum);
-};
-
 // Функции приведения даты и времени к человекочитаемому виду
 const humanizeDate = (date) => dayjs(date).format('DD/MM/YY HH:mm');
 const humanizePointDate = (date) => dayjs(date).format('MMM D');
@@ -55,7 +46,6 @@ const getCheckedDestination = (point, destinations) => destinations.find((destin
 const isEscKey = (evt) => (evt.key.includes('Escape', 'Esc'));
 
 export {
-  getRandomInt,
   humanizeDate,
   humanizePointDate,
   humanizePointTime,

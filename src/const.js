@@ -2,9 +2,6 @@ import dayjs from 'dayjs';
 
 /** Описание констант **/
 
-// Города
-const CITIES = ['Riga', 'Vilnius', 'Tallinn', 'Prague', 'Stockholm', 'Wien', 'Rome', 'Berlin', 'Budapest', 'Madrid'];
-
 // Типы
 const TYPES = ['taxi', 'bus', 'train', 'ship', 'drive', 'flight', 'check-in', 'sightseeing', 'restaurant'];
 
@@ -93,7 +90,6 @@ const TIME_LIMIT = {
 };
 
 export {
-  CITIES,
   TYPES,
   EMPTY_POINT_MESSAGE,
   SortType,
