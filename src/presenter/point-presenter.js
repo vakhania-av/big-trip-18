@@ -55,8 +55,8 @@ export default class PointPresenter {
       this.#mode = POINT_MODE.DEFAULT;
     }
 
-    remove(prevPointEditComponent);
     remove(prevPointComponent);
+    remove(prevPointEditComponent);
   };
 
   #escKeyDownHandler = (evt) => {
@@ -106,12 +106,14 @@ export default class PointPresenter {
     if (this.#mode !== POINT_MODE.DEFAULT) {
       this.#pointEditComponent.reset(this.#point, this.#destinations);
       this.#replaceFormToPoint();
+      document.removeEventListener('keydown', this.#escKeyDownHandler);
     }
   };
 
   destroy = () => {
     remove(this.#pointEditComponent);
     remove(this.#pointComponent);
+    document.removeEventListener('keydown', this.#escKeyDownHandler);
   };
 
   setSaving = () => {
