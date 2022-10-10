@@ -110,8 +110,8 @@ const createResetButtonText = (formType, isDeleting) => {
 const createEventEditTemplate = (point, offers, destinations, formType) => {
   const { dateFrom, dateTo, basePrice, type, isDeleting, isDisabled, isSaving } = point;
 
-  const dateFromFormatted = humanizeDate(dateFrom);
-  const dateToFormatted = humanizeDate(dateTo);
+  const dateFromFormatted = dateFrom !== null ? humanizeDate(dateFrom) : '';
+  const dateToFormatted = dateTo !== null ? humanizeDate(dateTo) : '';
 
   const typeFormatted = `${type[0].toUpperCase()}${type.slice(1)}`;
   const selectedDestination = getCheckedDestination(point, destinations);
@@ -280,21 +280,18 @@ export default class EventEditView extends AbstractStatefulView {
     super.removeElement();
 
     if (this.#datepickerFrom) {
-      this.#datepickerFrom.destroy();
-      this.#datepickerFrom = null;
+      this.destroyDatepickerFrom();
     }
 
     if (this.#datepickerTo) {
-      this.#datepickerTo.destroy();
-      this.#datepickerTo = null;
+      this.destroyDatepickerTo();
     }
   };
 
   // Установка дат в календаре
   #setDateFromPicker = () => {
     if (this.#datepickerFrom) {
-      this.#datepickerFrom.destroy();
-      this.#datepickerFrom = null;
+      this.destroyDatepickerFrom();
     }
 
     if (this._state.dateFrom) {
@@ -314,8 +311,7 @@ export default class EventEditView extends AbstractStatefulView {
 
   #setDateToPicker = () => {
     if (this.#datepickerTo) {
-      this.#datepickerTo.destroy();
-      this.#datepickerTo = null;
+      this.destroyDatepickerTo();
     }
 
     if (this._state.dateTo) {
@@ -354,11 +350,23 @@ export default class EventEditView extends AbstractStatefulView {
     this.setCancelClickHandler(this._callback.cancelClick);
   };
 
+  destroyDatepickerFrom = () => {
+    this.#datepickerFrom.destroy();
+    this.#datepickerFrom = null;
+  };
+
+  destroyDatepickerTo = () => {
+    this.#datepickerTo.destroy();
+    this.#datepickerTo = null;
+  };
+
   // Обработчик даты начала путешествия
   #dateFromChangeHandler = ([userDate]) => {
     this.updateElement({
       dateFrom: userDate
     });
+
+    this.destroyDatepickerFrom();
   };
 
   // Обработчик даты окончания путешествия
@@ -366,6 +374,8 @@ export default class EventEditView extends AbstractStatefulView {
     this.updateElement({
       dateTo: userDate
     });
+
+    this.destroyDatepickerTo();
   };
 
   // Обработчик смены точки маршрута
